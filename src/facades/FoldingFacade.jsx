@@ -16,7 +16,7 @@ const densitySliderValue = 0.5;
 const articulationSliderName = "Articulation";
 const articulationSliderValue = 0.3;
 
-const pleatDirToggleName = "Pleat direction";
+const pleatDirToggleName = "Pleat_direction";
 const pleatDirToggleValue = false;
 
 export default function FoldingFacade() {

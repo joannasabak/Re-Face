@@ -74,6 +74,9 @@ async function compute(definition, definitionInputs) {
     trees
   );
 
+  if (res.errors?.length) console.error("Grasshopper errors:", res.errors);
+  if (res.warnings?.length) console.warn("Grasshopper warnings:", res.warnings);
+
   // Save end time
   const endTime = performance.now();
 
