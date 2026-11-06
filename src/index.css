@@ -1,0 +1,162 @@
+:root {
+  /* palette */
+  --paper: #f3f6fa;
+  --paper-raised: #ffffff;
+  --line: #d5e0ec;         /* borders and dividers */
+  --ink: #111a24;          /* main text: near-black with a hint of navy */
+  --ink-soft: #3b4b5c;     /* secondary text */
+  --outline: #1f3a5f;      /* outlines on the 3D model */
+  --accent: #4a78a8;       /* calm mid blue */
+  --accent-wash: #d6e6f5;  /* watercolour-like fill */
+  --shadow: rgba(31, 58, 95, 0.10);
+  --overlay: rgba(244, 248, 252, 0.7);
+
+  /* fonts */
+  --font-hand: 'Caveat', cursive;   /* only for the home page title */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* shapes */
+  --radius: 14px;
+  --radius-small: 8px;
+  --card-shadow: 0 1px 2px var(--shadow), 0 8px 24px var(--shadow);
+
+  /* names the old components still use */
+  --color-background: var(--paper);
+  --color-heading: var(--ink);
+  --color-text: var(--ink);
+  --color-border: var(--line);
+  --color-theme: var(--accent);
+  --custom-color: var(--accent);
+  --global-light: var(--accent-wash);
+  --vt-c-slate-200: var(--accent-wash);
+  --vt-c-text-light-2: var(--ink-soft);
+}
+
+[data-theme="dark"] {
+  --paper: #11263d;
+  --paper-raised: #17324f;
+  --line: #2a4a6d;
+  --ink: #f2f6fa;
+  --ink-soft: #b9cbdd;
+  --outline: #e4effa;
+  --accent: #8ec5f2;
+  --accent-wash: #2a5480;
+  --shadow: rgba(2, 10, 22, 0.35);
+  --overlay: rgba(19, 48, 79, 0.7);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  background-color: var(--paper);
+  transition: color 0.5s, background-color 0.5s;
+  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: 2.2rem; font-weight: 700; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 6px 0 12px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--ink);
+}
+
+/* Shared by every geometry view component */
+#threejs-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#viewport {
+  position: fixed;
+}
+
+.input-title {
+  color: var(--ink);
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* sliders */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(to right, var(--accent) var(--value, 50%), var(--line) var(--value, 50%));
+  border-radius: 999px;
+  outline: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--paper-raised);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px var(--shadow);
+  cursor: pointer;
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--paper-raised);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type='range']:hover::-webkit-slider-thumb {
+  background: var(--accent-wash);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

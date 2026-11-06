@@ -1,0 +1,67 @@
+#body {
+  display: block;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  align-items: center;
+  gap: 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.home-card {
+  padding: 2rem 2.2rem;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+}
+
+.home-card h1 {
+  /* the one handwritten accent in the app */
+  font-family: var(--font-hand);
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
+  margin-bottom: 0.8rem;
+}
+
+.home-card h2 {
+  font-size: 1.05rem;
+  margin-top: 1.4rem;
+}
+
+.home-card p {
+  color: var(--ink-soft);
+}
+
+.home-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.8rem 0;
+}
+
+.home-card li {
+  position: relative;
+  padding-left: 1.8rem;
+  margin: 0.5rem 0;
+}
+
+.home-card li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 9px;
+  height: 9px;
+  background-color: var(--accent);
+  border-radius: 50%;
+}
+
+
+@media (max-width: 800px) {
+  #body {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1rem;
+  }
+}

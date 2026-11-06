@@ -1,0 +1,21 @@
+.summaryBox {
+  padding-top: 12px;
+}
+
+.summaryBox h3 {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.metadata {
+  min-height: 2.5em;
+  padding: 8px 12px;
+  background-color: var(--paper);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-small);
+  color: var(--ink);
+}
+
+.metadata p {
+  margin: 2px 0;
+}
