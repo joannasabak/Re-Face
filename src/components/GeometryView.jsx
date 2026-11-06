@@ -9,6 +9,7 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
   const computeRef = useRef(null)
   const latestProps = useRef({ data, path, onUpdateMetadata })
   const previousData = useRef(data)
+  const previousPath = useRef(path)
 
   useEffect(() => {
     latestProps.current = { data, path, onUpdateMetadata }
@@ -19,7 +20,8 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
     const container = containerRef.current
     let disposed = false
     let animationId
-    let solveCounter = 0
+    let latestRequest = 0   // used to ignore results that arrive after a newer request
+    let zoomedPath = null   // which definition the camera was last fitted to
 
     const loader = new Rhino3dmLoader()
     loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.0.0-beta2/')
@@ -71,35 +73,36 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
 
     async function compute() {
       const { data, path, onUpdateMetadata } = latestProps.current
+      const request = ++latestRequest
       const doc = await runCompute(data, path)
-      if (disposed) return
+      // skip this result if the page closed or a newer request was sent meanwhile
+      if (disposed || request !== latestRequest) return
 
       if (doc.metadata) {
         onUpdateMetadata?.(doc.metadata)
       }
 
-      scene.traverse((child) => {
-        if (!child.isLight) scene.remove(child)
-      })
-
       const buffer = new Uint8Array(doc.toByteArray()).buffer
       const renderStart = performance.now()
       loader.parse(buffer, function (object) {
-        if (disposed) return
+        if (disposed || request !== latestRequest) return
+
+        // remove the previous model and free its memory
+        for (const child of [...scene.children]) {
+          if (!child.isLight) {
+            scene.remove(child)
+            disposeObject(child)
+          }
+        }
 
         scene.add(object)
         console.log(`3D model parsing: ${((performance.now() - renderStart) / 1000).toFixed(3)} seconds`)
 
-        //this is used to zoom to Camera selection only when it loads
-        if (solveCounter === 0) {
-          for (let child of scene.children) {
-            if (child.type === 'Object3D') {
-              zoomCameraToSelection(camera, controls, child.children)
-            }
-          }
+        // fit the camera the first time each definition loads, not on every slider change
+        if (zoomedPath !== path) {
+          zoomCameraToSelection(camera, controls, object.children)
+          zoomedPath = path
         }
-
-        solveCounter++
       })
     }
     computeRef.current = compute
@@ -132,16 +135,17 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
     }
   }, [])
 
-  //this effect watches for changes in the incoming data
+  //this effect watches for changes in the incoming data or definition
   useEffect(() => {
-    if (previousData.current === data) return
+    if (previousData.current === data && previousPath.current === path) return
     previousData.current = data
+    previousPath.current = path
 
     console.log(data)
     if (data) {
       computeRef.current?.() 
     }
-  }, [data])
+  }, [data, path])
 
   return (
     <div id="viewport">
@@ -150,11 +154,25 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
   )
 }
 
+function disposeObject(object) {
+  object.traverse((child) => {
+    child.geometry?.dispose()
+    const materials = Array.isArray(child.material) ? child.material : [child.material]
+    for (const material of materials) {
+      if (!material) continue
+      material.map?.dispose()
+      material.dispose()
+    }
+  })
+}
+
 function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.1) {
   const box = new THREE.Box3()
   for (const object of selection) {
     if (!object.isLight) box.expandByObject(object)
   }
+
+  if (box.isEmpty()) return
 
   const size = box.getSize(new THREE.Vector3())
   const center = box.getCenter(new THREE.Vector3())

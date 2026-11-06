@@ -1,7 +1,8 @@
 import { useState } from "react";
 import styles from "../ui/Toggle.module.css";
 
-export default function Toggle({ title, val, onUpdate}) {
+// title = Grasshopper input name, label = text shown (defaults to title)
+export default function Toggle({ title, label, val, onUpdate }) {
     const [toggleValue, setToggleValue] = useState(Boolean(val));
 
     function handleChange(event) {
@@ -24,7 +25,7 @@ export default function Toggle({ title, val, onUpdate}) {
                 </div>
             </div>
             <div className={styles.title}>
-                <span className="input-title">{title}</span>
+                <span className="input-title">{label ?? title}</span>
             </div>
         </div>
     );

@@ -23,3 +23,11 @@
 .sidebar p {
   color: var(--ink-soft);
 }
+
+.sectionTitle {
+  margin-top: 1.6rem;
+}
+
+.sidebar :global(.setting) {
+  margin-bottom: 14px;
+}

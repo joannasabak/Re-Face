@@ -1,8 +1,9 @@
 import { useState } from "react";
 import styles from "../ui/Dropdown.module.css";
 
-export default function Dropdown({ title, options, onUpdate }) {
-    const [selectedOption, setSelectedOption] = useState(0);
+// title = Grasshopper input name, label = text shown (defaults to title)
+export default function Dropdown({ title, label, options, val, onUpdate }) {
+    const [selectedOption, setSelectedOption] = useState(val ?? options[0]?.value ?? 0);
 
     function handleChange(event) {
         const value = Number(event.target.value);
@@ -11,9 +12,9 @@ export default function Dropdown({ title, options, onUpdate }) {
     }
 
     return (
-        <form className="definition-input">
+        <div className="definition-input">
             <label className="input-title">
-                {title} index: {selectedOption}
+                {label ?? title}
             </label>
 
             <select
@@ -27,6 +28,6 @@ export default function Dropdown({ title, options, onUpdate }) {
                     </option>
                 ))}
             </select>
-        </form>
+        </div>
     );
 }

@@ -12,9 +12,11 @@ RhinoCompute.url = "http://localhost:6500/"
 
 let rhino, doc, res
 let rhinoPromise
+let pendingRequests = 0
 const definitionCache = new Map()
 
 async function runCompute(data, path) {
+  pendingRequests++;
   store.computing = true;
   try {
     const def = await loadGH(path);
@@ -24,7 +26,9 @@ async function runCompute(data, path) {
     console.log(`Rhino document conversion: ${((performance.now() - conversionStart) / 1000).toFixed(3)} seconds`);
     return doc;
   } finally {
-    store.computing = false;
+    // only hide the spinner once every request has finished
+    pendingRequests--;
+    store.computing = pendingRequests > 0;
   }
 }
 
