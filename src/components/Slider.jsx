@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-export default function Slider({ title, min, max, step, val, onUpdate }) {
+// title = Grasshopper input name, label = text shown (defaults to title)
+export default function Slider({ title, label, min, max, step, val, onUpdate }) {
     const [sliderValue, setSliderValue] = useState(Number(val));
     const percent = ((sliderValue - min) / (max - min)) * 100;
 
@@ -8,7 +9,7 @@ export default function Slider({ title, min, max, step, val, onUpdate }) {
         <div>
             <form className="definition-input">
                 <label className="input-title">
-                    {title}: {sliderValue}
+                    {label ?? title}: {sliderValue}
                 </label>
                 <input
                     type="range"

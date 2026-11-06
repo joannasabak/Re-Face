@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+  <rect width="64" height="64" rx="12" fill="#e7f0f9" stroke="none"/>
+  <!-- pleated panels -->
+  <path d="M10 14 L18 18 L26 14 L34 18 L42 14 L50 18 L54 16 L54 50 L50 52 L42 48 L34 52 L26 48 L18 52 L10 48 Z" fill="#ffffff"/>
+  <path d="M18 18 L18 52 M26 14 L26 48 M34 18 L34 52 M42 14 L42 48 M50 18 L50 52"/>
+  <path d="M18 18 L26 14 L26 48 L18 52 Z M34 18 L42 14 L42 48 L34 52 Z" fill="#c9ddf0"/>
+</svg>
