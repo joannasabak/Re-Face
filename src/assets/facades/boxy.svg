@@ -1,10 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#1f3a5f" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
   <rect width="64" height="64" rx="12" fill="#e7f0f9" stroke="none"/>
-  <!-- volume with boxes protruding by different amounts -->
-  <rect x="12" y="10" width="40" height="44" fill="#ffffff"/>
-  <path d="M12 24.5 L52 24.5 M12 39 L52 39 M25.3 10 L25.3 54 M38.6 10 L38.6 54" stroke-width="1.1" opacity="0.5"/>
-  <path d="M15 13 L23 13 L23 22 L15 22 Z" fill="#c9ddf0"/>
-  <path d="M41 27 L50 27 L50 36 L41 36 Z" fill="#c9ddf0"/>
-  <path d="M28 41 L36 41 L36 51 L28 51 Z" fill="#c9ddf0"/>
-  <path d="M23 13 L26 11 M23 22 L26 20 M50 27 L53 25 M50 36 L53 34 M36 41 L39 39 M36 51 L39 49" stroke-width="1.4"/>
+  <!-- volume with an identical box protruding from every cell -->
+  <rect x="12" y="9" width="40" height="46" fill="#c9ddf0" stroke-width="1.8"/>
+  <path d="M12 24.33 L52 24.33 M12 39.67 L52 39.67 M32.0 9 L32.0 55" stroke-width="1" opacity="0.45"/>
+  <path d="M14.4 13.4 L17.0 10.8 L17.0 19.33 L14.4 21.93 Z" fill="#a9c6e3"/>
+  <path d="M14.4 21.93 L17.0 19.33 L30.2 19.33 L27.6 21.93 Z" fill="#a9c6e3"/>
+  <rect x="17.0" y="10.8" width="13.2" height="8.53" fill="#ffffff"/>
+  <path d="M34.4 13.4 L37.0 10.8 L37.0 19.33 L34.4 21.93 Z" fill="#a9c6e3"/>
+  <path d="M34.4 21.93 L37.0 19.33 L50.2 19.33 L47.6 21.93 Z" fill="#a9c6e3"/>
+  <rect x="37.0" y="10.8" width="13.2" height="8.53" fill="#ffffff"/>
+  <path d="M14.4 28.73 L17.0 26.13 L17.0 34.67 L14.4 37.27 Z" fill="#a9c6e3"/>
+  <path d="M14.4 37.27 L17.0 34.67 L30.2 34.67 L27.6 37.27 Z" fill="#a9c6e3"/>
+  <rect x="17.0" y="26.13" width="13.2" height="8.53" fill="#ffffff"/>
+  <path d="M34.4 28.73 L37.0 26.13 L37.0 34.67 L34.4 37.27 Z" fill="#a9c6e3"/>
+  <path d="M34.4 37.27 L37.0 34.67 L50.2 34.67 L47.6 37.27 Z" fill="#a9c6e3"/>
+  <rect x="37.0" y="26.13" width="13.2" height="8.53" fill="#ffffff"/>
+  <path d="M14.4 44.07 L17.0 41.47 L17.0 50.0 L14.4 52.6 Z" fill="#a9c6e3"/>
+  <path d="M14.4 52.6 L17.0 50.0 L30.2 50.0 L27.6 52.6 Z" fill="#a9c6e3"/>
+  <rect x="17.0" y="41.47" width="13.2" height="8.53" fill="#ffffff"/>
+  <path d="M34.4 44.07 L37.0 41.47 L37.0 50.0 L34.4 52.6 Z" fill="#a9c6e3"/>
+  <path d="M34.4 52.6 L37.0 50.0 L50.2 50.0 L47.6 52.6 Z" fill="#a9c6e3"/>
+  <rect x="37.0" y="41.47" width="13.2" height="8.53" fill="#ffffff"/>
 </svg>
