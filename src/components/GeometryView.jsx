@@ -4,22 +4,24 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
 import { runCompute, loadRhino } from '../scripts/rhinoCompute.js';
 
-export default function GeometryView({ data, path, onUpdateMetadata }) {
+// active = false pauses drawing while the page is hidden; results still load in the background
+export default function GeometryView({ data, path, onUpdateMetadata, active = true }) {
   const containerRef = useRef(null)
   const computeRef = useRef(null)
-  const latestProps = useRef({ data, path, onUpdateMetadata })
+  const renderLoopRef = useRef(null)
+  const latestProps = useRef({ data, path, onUpdateMetadata, active })
   const previousData = useRef(data)
   const previousPath = useRef(path)
 
   useEffect(() => {
-    latestProps.current = { data, path, onUpdateMetadata }
+    latestProps.current = { data, path, onUpdateMetadata, active }
   })
 
   //this effect loads three and compute when the component is initialized
   useEffect(() => {
     const container = containerRef.current
     let disposed = false
-    let animationId
+    let animationId = null
     let latestRequest = 0   // used to ignore results that arrive after a newer request
     let zoomedPath = null   // which definition the camera was last fitted to
 
@@ -50,18 +52,6 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
     directionalLight.position.set(0, 1, 0)
     scene.add(directionalLight)
 
-    // add a cube to the scene
-    // const geometry = new THREE.BoxGeometry(10, 10, 10)
-
-    // //assign mesh normal material to the torus
-    // // const material = new THREE.MeshNormalMaterial()
-
-    // //assign color material to the torus
-    // const material = new THREE.MeshStandardMaterial({ color: 0xffffff})
-
-    // const cube = new THREE.Mesh(geometry, material)
-    // scene.add(cube)
-
     // THREE.Object3D.DEFAULT_UP.set(0, 0, 1); // Rhino Z is Three.js Y axis. Uncomment for Compute
 
     function animate() {
@@ -69,7 +59,19 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
       controls.update()
       renderer.render(scene, camera)
     }
-    animate()
+
+    function startRendering() {
+      if (animationId !== null) return
+      onResize() // the window may have been resized while the page was hidden
+      animate()
+    }
+
+    function stopRendering() {
+      if (animationId === null) return
+      cancelAnimationFrame(animationId)
+      animationId = null
+    }
+    renderLoopRef.current = { startRendering, stopRendering }
 
     async function compute() {
       const { data, path, onUpdateMetadata } = latestProps.current
@@ -114,6 +116,8 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
     }
     window.addEventListener('resize', onResize)
 
+    if (latestProps.current.active) startRendering()
+
     async function start() {
       await loadRhino()
       if (disposed) return
@@ -125,7 +129,8 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
     return () => {
       disposed = true
       computeRef.current = null
-      cancelAnimationFrame(animationId)
+      renderLoopRef.current = null
+      stopRendering()
       window.removeEventListener('resize', onResize)
       controls.dispose()
       loader.dispose()
@@ -135,6 +140,12 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
     }
   }, [])
 
+  //this effect pauses drawing while the page is hidden and resumes it when shown
+  useEffect(() => {
+    if (active) renderLoopRef.current?.startRendering()
+    else renderLoopRef.current?.stopRendering()
+  }, [active])
+
   //this effect watches for changes in the incoming data or definition
   useEffect(() => {
     if (previousData.current === data && previousPath.current === path) return
@@ -143,7 +154,7 @@ export default function GeometryView({ data, path, onUpdateMetadata }) {
 
     console.log(data)
     if (data) {
-      computeRef.current?.() 
+      computeRef.current?.()
     }
   }, [data, path])
 

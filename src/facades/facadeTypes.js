@@ -1,17 +1,16 @@
-// Every facade type the configurator offers.
 // To add a new one: put the .gh file in assets/grasshopper, add a thumbnail
 // (any image works: .svg, .png or .jpg), and add an entry to the list below.
 //
-// Each input's `name` must match the NickName of the Get Number / Get Boolean
+// Each input's `name` must match the ParamName of the Hops
 // component in Grasshopper exactly (spaces, underscores and capitals included).
 
 import foldingDefinition from "../assets/grasshopper/Folding_facade.gh";
 import steppingDefinition from "../assets/grasshopper/Stepping facade from curve.gh";
 import boxyDefinition from "../assets/grasshopper/Stepping facade on volume.gh";
 
-import foldingThumbnail from "../assets/facades/folding.svg";
-import steppingThumbnail from "../assets/facades/stepping.svg";
-import boxyThumbnail from "../assets/facades/boxy.svg";
+import foldingThumbnail from "../assets/thumbnails/folding.svg";
+import steppingThumbnail from "../assets/thumbnails/stepping.svg";
+import boxyThumbnail from "../assets/thumbnails/boxy.svg";
 
 export const FACADE_TYPES = [
   {
@@ -54,6 +53,14 @@ export const FACADE_TYPES = [
       // { type: "slider", name: "vertical_mullion", label: "Vertical mullion", min: 0, max: 1, step: 0.05, value: 0.1 },
     ],
   },
+  // {
+  //   id: "tables",
+  //   name: "Tables",
+  //   description: "Table-frames with stick mullion glazing."
+  //   definition: tablesDefinition,
+  //   thumbnail: tablesThumbnail,
+  //   inputs: [{}],
+  // },
 ];
 
 // { Density: 2, Articulation: 1, ... } from a facade's input list

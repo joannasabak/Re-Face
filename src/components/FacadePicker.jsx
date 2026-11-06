@@ -1,5 +1,4 @@
 // A dropdown menu showing the facade types to choose from, each with its thumbnail.
-// A normal <select> can't show images, so this is built from a button and a list.
 import { useEffect, useId, useRef, useState } from "react";
 import styles from "../ui/FacadePicker.module.css";
 

@@ -1,6 +1,6 @@
 import rhino3dm from "https://cdn.jsdelivr.net/npm/rhino3dm@8.32.0/rhino3dm.module.min.js"
 import RhinoCompute from "compute-rhino3d"
-import { store } from "../stores/storeSingle.js";
+import { store } from "../stores/computeStore.js";
 
 // Local RhinoCompute endpoint  
 RhinoCompute.url = "http://localhost:6500/" 

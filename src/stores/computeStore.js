@@ -9,7 +9,7 @@ function subscribe(listener) {
 }
 
 // Plain object that non-React code (compute.js) can read and write.
-export const computeStore = {
+export const store = {
   get computing() {
     return computing;
   },
