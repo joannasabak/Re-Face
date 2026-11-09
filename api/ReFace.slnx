@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ReFace.Api/ReFace.Api.csproj" />
+  <Project Path="ReFace.Core/ReFace.Core.csproj" />
+</Solution>
