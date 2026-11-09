@@ -1,9 +1,20 @@
 import { useState } from "react";
 
-// title = Grasshopper input name, label = text shown (defaults to title)
+//shows value from the parent in gh
+//while dragging uses state to show a temp value and only sends the input to gh once set
+//prevents running compute per every step
 export default function Slider({ title, label, min, max, step, val, onUpdate }) {
-    const [sliderValue, setSliderValue] = useState(Number(val));
+    const [temp, setTemp] = useState(null);
+
+    const sliderValue = temp ?? Number(val);
     const percent = ((sliderValue - min) / (max - min)) * 100;
+
+    function ghSend() {
+        if (temp !== null && temp !== Number(val)) {
+            onUpdate?.(temp, title);
+        }
+        setTemp(null);
+    }
 
     return (
         <div>
@@ -19,8 +30,9 @@ export default function Slider({ title, label, min, max, step, val, onUpdate }) 
                     max={max}
                     step={step}
                     value={sliderValue}
-                    onChange={(event) => setSliderValue(Number(event.target.value))}
-                    onMouseUp={() => onUpdate?.(sliderValue, title)}
+                    onChange={(event) => setTemp(Number(event.target.value))}
+                    onPointerUp={ghSend}
+                    onKeyUp={ghSend}
                 />
             </form>
         </div>

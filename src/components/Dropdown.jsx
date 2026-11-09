@@ -1,14 +1,13 @@
-import { useState } from "react";
 import styles from "../ui/Dropdown.module.css";
 
-// title = Grasshopper input name, label = text shown (defaults to title)
+//inputs come from grasshopper
 export default function Dropdown({ title, label, options, val, onUpdate }) {
-    const [selectedOption, setSelectedOption] = useState(val ?? options[0]?.value ?? 0);
 
+    //inputs compared as text
+    //values for options sent to gh as numbers, matching label:value pairs in facades.js
     function handleChange(event) {
-        const value = Number(event.target.value);
-        setSelectedOption(value);
-        onUpdate?.(value, title);
+        const chosen = options.find(option => String(option.value) === event.target.value);
+        onUpdate?.(chosen.value, title);
     }
 
     return (
@@ -18,7 +17,7 @@ export default function Dropdown({ title, label, options, val, onUpdate }) {
             </label>
 
             <select
-                value={selectedOption}
+                value={val}
                 className={styles.dropdown}
                 onChange={handleChange}
             >

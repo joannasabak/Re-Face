@@ -8,21 +8,21 @@ import { FACADE_TYPES, defaultValues } from "../facades/facadeTypes.js";
 
 import styles from "../ui/Sidebar.module.css";
 
-// Settings are saved in the browser (localStorage) so they survive a page refresh.
-// Change the version number if the saved format ever changes, to start fresh.
+//settings are cached in browser local storage
+//change the version number if the saved format ever changes
 const STORAGE_KEY = "re-face:configurator:v1";
 
 export default function FacadeConfigurator({ active = true }) {
   const [saved] = useState(loadSettings);
   const [selectedId, setSelectedId] = useState(saved.selectedId);
-  // settings for every facade type, so switching back keeps what you set
+  //settings for every facade type
   const [valuesById, setValuesById] = useState(saved.valuesById);
   const [metadata, setMetadata] = useState([]);
 
   const facade = FACADE_TYPES.find((f) => f.id === selectedId);
   const inputs = valuesById[selectedId];
 
-  // save whenever the selection or a setting changes
+  //save whenever the selection or a setting changes
   useEffect(() => {
     saveSettings({ selectedId, valuesById });
   }, [selectedId, valuesById]);
@@ -33,7 +33,11 @@ export default function FacadeConfigurator({ active = true }) {
     setMetadata([]);
   }
 
-  // called by the sliders/toggles as (newValue, inputName)
+  function resetSettings() {
+    setValuesById({ ...valuesById, [selectedId]: defaultValues(facade) });
+  }
+
+  // called by the sliders/toggles
   function updateValue(newValue, inputName) {
     setValuesById((current) => {
       const values = current[selectedId];
@@ -54,6 +58,10 @@ export default function FacadeConfigurator({ active = true }) {
         <h2 className={styles.sectionTitle}>Settings</h2>
         <hr />
         <FacadeSettings facade={facade} values={inputs} onUpdate={updateValue} />
+        <br />
+        <button type="button" className={styles.resetButton} onClick={resetSettings}>
+          Reset settings
+        </button>
 
         <ModelSummary metadata={metadata} />
       </div>
