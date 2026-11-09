@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="ReFace.Api/ReFace.Api.csproj" />
   <Project Path="ReFace.Core/ReFace.Core.csproj" />
+  <Project Path="ReFace.Tests/ReFace.Tests.csproj" />
 </Solution>
