@@ -211,19 +211,19 @@ function passesFilters(item, filters) {
   return true;
 }
 
-// Compares two values for sorting: numbers by size, text alphabetically.
-// Returns a negative number if a comes first, positive if b comes first, 0 if equal.
+//compared values for sorting, numbers and strings
 function compareValues(a, b) {
   if (typeof a === "number") return a - b;
   return String(a).localeCompare(String(b));
 }
 
-// The different values a field has, in alphabetical order, e.g. ["aluminium", "steel", "timber", "upvc"]
+// alphabetical order of fields
 function uniqueValues(field) {
   const values = new Set(inventory.items.map((item) => item[field]));
   return [...values].sort();
 }
 
+//capitalise the first letter
 function capitalise(text) {
   if (text === "upvc") return "uPVC";
   return text.charAt(0).toUpperCase() + text.slice(1);
