@@ -1,19 +1,21 @@
 import rhino3dm from "https://cdn.jsdelivr.net/npm/rhino3dm@8.32.0/rhino3dm.module.min.js"
 import RhinoCompute from "compute-rhino3d"
+import { BufferGeometryLoader } from "three";
 import { store } from "../stores/computeStore.js";
 
-//Local RhinoCompute endpoint  
-RhinoCompute.url = "http://localhost:6500/" 
+// Local RhinoCompute endpoint  
+RhinoCompute.url = "http://localhost:6500/"
 
 
-//placeholder for server url
+//modify to use remote server
 //RhinoCompute.url = "url"
 //RhinoCompute.apiKey = "api key"
 
-let rhino, doc, res
+let rhino, res
 let rhinoPromise
 let pendingRequests = 0
 const definitionCache = new Map()
+const geometryLoader = new BufferGeometryLoader();
 
 async function runCompute(data, path) {
   pendingRequests++;
@@ -22,11 +24,10 @@ async function runCompute(data, path) {
     const def = await loadGH(path);
     res = await compute(def, data);
     const conversionStart = performance.now();
-    doc = createDoc(res);
-    console.log(`Rhino document conversion: ${((performance.now() - conversionStart) / 1000).toFixed(3)} seconds`);
-    return doc;
+    const result = toThree(res);
+    console.log(`Conversion to three.js: ${((performance.now() - conversionStart) / 1000).toFixed(3)} seconds`);
+    return result;
   } finally {
-    // only hide the spinner once every request has finished
     pendingRequests--;
     store.computing = pendingRequests > 0;
   }
@@ -62,9 +63,9 @@ async function loadGH(definitionPath) {
   return definitionCache.get(definitionPath);
 }
 
-//eval performance & check if gh fails
+//check how long gh takes and if any issues with the def
 async function compute(definition, definitionInputs) {
-  //Save start time
+  //save start time
   const startTime = performance.now();
 
   const trees = [];
@@ -92,55 +93,61 @@ async function compute(definition, definitionInputs) {
   return res;
 }
 
-function createDoc(res) {
-  doc = new rhino.File3dm()
+//compute to three.js
+function toThree(res) {
+  const parts = [];
+  const metadata = [];
+  let skipped = 0;
 
-  let data;
-  let metadata = [];
+  //compute answer holding the data structure
+  for (const output of res.values) {
+    for (const branch of Object.values(output.InnerTree)) {
+      for (const item of branch) {
+        const data = JSON.parse(item.data);
 
-  //decode grasshopper objects and put them into a rhino document
-  for (let i = 0; i < res.values.length; i++) {
-    for (const value of Object.values(res.values[i].InnerTree)) {
-      for (const d of value) {
-        const dataType = String(d.type);
-
-        //Geometry
-        if (dataType.includes("Geometry")) {
-          data = JSON.parse(d.data);
-          const rhinoObject = rhino.CommonObject.decode(data);
-          doc.objects().add(rhinoObject, null);
-        } else {
-          //Other ouputs
-          const outputParameter = {
-            name: res.values[i].ParamName,
-            value: JSON.parse(d.data),
-          };
-          metadata.push(outputParameter);
+        //not geometry
+        if (!String(item.type).includes("Geometry")) {
+          metadata.push({ name: output.ParamName, value: data });
+          continue;
         }
+
+        //JSON back into a Rhino object
+        const rhinoObject = rhino.CommonObject.decode(data);
+        if (rhinoObject === null) {
+          skipped++;
+          continue;
+        }
+
+        if (rhinoObject instanceof rhino.Mesh) {
+          const threeJson = rhinoObject.toThreejsJSON();
+          const geometry = geometryLoader.parse(threeJson);
+          const tags = readTags(rhinoObject);
+          parts.push({ geometry: geometry, tags: tags });
+        } else {
+          skipped++;
+        }
+
+        rhinoObject.delete();
       }
     }
   }
 
-  doc.metadata = metadata;
-
-  //go through the objects in the Rhino document
-  let objects = doc.objects();
-  for (let i = 0; i < objects.count; i++) {
-    const rhinoObject = objects.get(i);
-    //asign geometry userstrings to object attributes
-    if (rhinoObject.geometry().userStringCount > 0) {
-      const g_userStrings = rhinoObject.geometry().getUserStrings();
-
-      //iterate through userData and store all userdata to geometry
-      for (let j = 0; j < g_userStrings.length; j++) {
-        rhinoObject
-          .attributes()
-          .setUserString(g_userStrings[j][0], g_userStrings[j][1]);
-      }
-    }
+  if (skipped > 0) {
+    console.warn(`Skipped ${skipped} objects that are not meshes. Mesh them in Grasshopper before Context Bake.`);
   }
-  return doc;
+
+  return { parts: parts, metadata: metadata };
 }
 
+function readTags(rhinoObject) {
+  const tags = {};
+  const pairs = rhinoObject.getUserStrings();
+  for (const pair of pairs) {
+    const key = pair[0];
+    const value = pair[1];
+    tags[key] = value;
+  }
+  return tags;
+}
 
 export { loadRhino, runCompute };

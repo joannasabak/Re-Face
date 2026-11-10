@@ -8,9 +8,9 @@ import foldingDefinition from "../assets/grasshopper/Folding_facade.gh";
 import steppingDefinition from "../assets/grasshopper/Stepping facade from curve.gh";
 import boxyDefinition from "../assets/grasshopper/Stepping facade on volume.gh";
 
-import foldingThumbnail from "../assets/thumbnails/folding.svg";
-import steppingThumbnail from "../assets/thumbnails/stepping.svg";
-import boxyThumbnail from "../assets/thumbnails/boxy.svg";
+import foldingThumbnail from "../assets/thumbnails/Zigzag.png";
+import steppingThumbnail from "../assets/thumbnails/Stepping.png";
+import boxyThumbnail from "../assets/thumbnails/Boxy.png";
 
 export const FACADE_TYPES = [
   {
@@ -21,8 +21,8 @@ export const FACADE_TYPES = [
     thumbnail: foldingThumbnail,
     inputs: [
       // TODO: check these ranges against the Grasshopper definition
-      { type: "slider", name: "Density", min: 1, max: 20, step: 1, value: 2 },
-      { type: "slider", name: "Articulation", min: 1, max: 30, step: 1, value: 1 },
+      { type: "slider", name: "Density", min: 0.5, max: 10, step: 0.5, value: 0.5 },
+      { type: "slider", name: "Articulation", min: 0.1, max: 3, step: 0.1, value: 0.3 },
       { type: "toggle", name: "Pleat_direction", label: "Pleat direction", value: false },
     ],
   },

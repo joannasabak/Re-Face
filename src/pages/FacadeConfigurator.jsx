@@ -1,28 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import GeometryView from "../components/GeometryView.jsx";
 import FacadePicker from "../components/FacadePicker.jsx";
 import FacadeSettings from "../components/FacadeSettings.jsx";
 import ModelSummary from "../components/ModelSummary.jsx";
+import MatchSummary from "../components/MatchSummary.jsx";
+import { matchPanels } from "../scripts/api.js";
 import { FACADE_TYPES, defaultValues } from "../facades/facadeTypes.js";
 
 import styles from "../ui/Sidebar.module.css";
 
-//settings are cached in browser local storage
-//change the version number if the saved format ever changes
+// Settings are saved in the browser (localStorage) so they survive a page refresh.
+// Change the version number if the saved format ever changes, to start fresh.
 const STORAGE_KEY = "re-face:configurator:v1";
 
 export default function FacadeConfigurator({ active = true }) {
   const [saved] = useState(loadSettings);
   const [selectedId, setSelectedId] = useState(saved.selectedId);
-  //settings for every facade type
+  // settings for every facade type, so switching back keeps what you set
   const [valuesById, setValuesById] = useState(saved.valuesById);
   const [metadata, setMetadata] = useState([]);
+
+  // panel matching
+  const [facadePanels, setFacadePanels] = useState([]); // the tagged panels of the current geometry
+  const [matchResults, setMatchResults] = useState(null); // the answer from /match, or null
+  const [matchError, setMatchError] = useState(null); // a message if matching failed
+  const [matching, setMatching] = useState(false); // true while waiting for the API
+  const [showMatches, setShowMatches] = useState(true); // colour the panels or not
+  const latestMatchRequest = useRef(0); // used to ignore answers that arrive too late
 
   const facade = FACADE_TYPES.find((f) => f.id === selectedId);
   const inputs = valuesById[selectedId];
 
-  //save whenever the selection or a setting changes
+  // save whenever the selection or a setting changes
   useEffect(() => {
     saveSettings({ selectedId, valuesById });
   }, [selectedId, valuesById]);
@@ -33,11 +43,58 @@ export default function FacadeConfigurator({ active = true }) {
     setMetadata([]);
   }
 
+  // called by GeometryView every time new geometry arrives, with the panels it found
+  function updatePanels(panels) {
+    // results (or an answer still on its way) belong to the old geometry, so forget them
+    latestMatchRequest.current++;
+    setFacadePanels(panels);
+    setMatchResults(null);
+    setMatchError(null);
+    setMatching(false);
+  }
+
+  // called by the "Compare with inventory" button
+  async function compareWithInventory() {
+    latestMatchRequest.current++;
+    const request = latestMatchRequest.current;
+
+    setMatching(true);
+    setMatchError(null);
+
+    console.log(`Sending ${facadePanels.length} panels to the API for matching (sizes in mm):`);
+    console.table(facadePanels);
+
+    try {
+      const results = await matchPanels(facadePanels);
+      // the facade may have changed while we waited: only keep the answer if it's still current
+      if (request === latestMatchRequest.current) {
+        setMatchResults(results);
+        setShowMatches(true);
+      }
+    } catch (error) {
+      if (request === latestMatchRequest.current) {
+        setMatchError(error.message);
+      }
+    } finally {
+      // runs after try or catch, whichever happened
+      if (request === latestMatchRequest.current) {
+        setMatching(false);
+      }
+    }
+  }
+
+  // the matches to colour in the 3D view, or null for no colours
+  let shownMatches = null;
+  if (showMatches && matchResults !== null) {
+    shownMatches = matchResults.matches;
+  }
+
+  // put the current facade's settings back to their starting values
   function resetSettings() {
     setValuesById({ ...valuesById, [selectedId]: defaultValues(facade) });
   }
 
-  // called by the sliders/toggles
+  // called by the sliders/toggles as (newValue, inputName)
   function updateValue(newValue, inputName) {
     setValuesById((current) => {
       const values = current[selectedId];
@@ -48,7 +105,14 @@ export default function FacadeConfigurator({ active = true }) {
 
   return (
     <div>
-      <GeometryView data={inputs} path={facade.definition} onUpdateMetadata={setMetadata} active={active} />
+      <GeometryView
+        data={inputs}
+        path={facade.definition}
+        onUpdateMetadata={setMetadata}
+        onUpdatePanels={updatePanels}
+        matches={shownMatches}
+        active={active}
+      />
 
       <div className={styles.sidebar}>
         <h2>Facade type</h2>
@@ -58,10 +122,19 @@ export default function FacadeConfigurator({ active = true }) {
         <h2 className={styles.sectionTitle}>Settings</h2>
         <hr />
         <FacadeSettings facade={facade} values={inputs} onUpdate={updateValue} />
-        <br />
         <button type="button" className={styles.resetButton} onClick={resetSettings}>
           Reset settings
         </button>
+
+        <MatchSummary
+          panelCount={facadePanels.length}
+          results={matchResults}
+          error={matchError}
+          matching={matching}
+          onCompare={compareWithInventory}
+          showMatches={showMatches}
+          onShowMatchesChange={setShowMatches}
+        />
 
         <ModelSummary metadata={metadata} />
       </div>
