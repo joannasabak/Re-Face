@@ -2,11 +2,11 @@ import rhino3dm from "https://cdn.jsdelivr.net/npm/rhino3dm@8.32.0/rhino3dm.modu
 import RhinoCompute from "compute-rhino3d"
 import { store } from "../stores/computeStore.js";
 
-// Local RhinoCompute endpoint  
+//Local RhinoCompute endpoint  
 RhinoCompute.url = "http://localhost:6500/" 
 
 
-// TODO: modify to use remote server
+//placeholder for server url
 //RhinoCompute.url = "url"
 //RhinoCompute.apiKey = "api key"
 
@@ -62,8 +62,9 @@ async function loadGH(definitionPath) {
   return definitionCache.get(definitionPath);
 }
 
+//eval performance & check if gh fails
 async function compute(definition, definitionInputs) {
-  // Save start time
+  //Save start time
   const startTime = performance.now();
 
   const trees = [];
@@ -81,7 +82,7 @@ async function compute(definition, definitionInputs) {
   if (res.errors?.length) console.error("Grasshopper errors:", res.errors);
   if (res.warnings?.length) console.warn("Grasshopper warnings:", res.warnings);
 
-  // Save end time
+  //save end time
   const endTime = performance.now();
 
   // Calculate the duration in milliseconds
@@ -103,13 +104,13 @@ function createDoc(res) {
       for (const d of value) {
         const dataType = String(d.type);
 
-        // Geometry
+        //Geometry
         if (dataType.includes("Geometry")) {
           data = JSON.parse(d.data);
           const rhinoObject = rhino.CommonObject.decode(data);
           doc.objects().add(rhinoObject, null);
         } else {
-          // Other ouputs
+          //Other ouputs
           const outputParameter = {
             name: res.values[i].ParamName,
             value: JSON.parse(d.data),
@@ -122,11 +123,11 @@ function createDoc(res) {
 
   doc.metadata = metadata;
 
-  // go through the objects in the Rhino document
+  //go through the objects in the Rhino document
   let objects = doc.objects();
   for (let i = 0; i < objects.count; i++) {
     const rhinoObject = objects.get(i);
-    // asign geometry userstrings to object attributes
+    //asign geometry userstrings to object attributes
     if (rhinoObject.geometry().userStringCount > 0) {
       const g_userStrings = rhinoObject.geometry().getUserStrings();
 

@@ -71,7 +71,7 @@ app.MapPost("/match", (MatchRequest request, IInventoryPlaceholder inventory) =>
 
 app.Run();
 
-// ---------- helper functions ----------
+
 
 //checks a /match request: returns a message about the first problem, or null if it's fine
 static string? Validate(MatchRequest request, MatchSettings settings)

@@ -12,6 +12,20 @@
   },
   "items": [
     {
+      "id": "WIN-000",
+      "type": "window",
+      "frameMaterial": "timber",
+      "glazing": "single",
+      "width": 900,
+      "height": 1500,
+      "depth": 140,
+      "quantity": 8,
+      "condition": "A",
+      "yearMade": 1910,
+      "source": "Victorian terrace refurbishment",
+      "available": true
+    },
+    {
       "id": "WIN-001",
       "type": "window",
       "frameMaterial": "timber",
@@ -284,6 +298,20 @@
       "glazing": "double",
       "width": 2400,
       "height": 2100,
+      "depth": 70,
+      "quantity": 3,
+      "condition": "B",
+      "yearMade": 2009,
+      "source": "Hotel refurbishment",
+      "available": true
+    },
+    {
+      "id": "WIN-021",
+      "type": "window",
+      "frameMaterial": "aluminium",
+      "glazing": "double",
+      "width": 2600,
+      "height": 2200,
       "depth": 70,
       "quantity": 3,
       "condition": "B",

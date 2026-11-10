@@ -1,6 +1,7 @@
 import { useState } from "react";
-import inventory from "../data/inventory.json";
 import styles from "../ui/Inventory.module.css";
+import { useInventory } from "../hooks/useInventory.js";
+import InventoryTable from "../components/InventoryTable.jsx";
 
 const WIN_FILTERS = {
   search: "",
@@ -13,6 +14,8 @@ const WIN_FILTERS = {
 };
 
 export default function Inventory() {
+  const { inventory, error } = useInventory();
+
   const [filters, setFilters] = useState(WIN_FILTERS);
   const [sortKey, setSortKey] = useState("id");
   const [sortAscending, setSortAcending] = useState(true);
@@ -22,7 +25,7 @@ export default function Inventory() {
     setFilters({ ...filters, [name]: value });
   }
 
-  // click on the kolumn heading for sorting and reverve
+  //click on the column heading for sorting and reverve
   function sortBy(key) {
     if (key === sortKey) {
       setSortAcending(!sortAscending);
@@ -31,6 +34,21 @@ export default function Inventory() {
       setSortKey(key);
       setSortAcending(true);
     }
+  }
+
+  if (error !== null || inventory === null) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <h1>Inventory</h1>
+          {error !== null ? (
+            <p className={styles.error}>{error}</p>
+          ) : (
+            <p className={styles.subtitle}>Loading inventory…</p>
+          )}
+        </div>
+      </div>
+    );
   }
 
   // keep only items matching the filters
@@ -49,8 +67,7 @@ export default function Inventory() {
   }
 
   //each column takes all of the above, combine in one object:
-  const sorting = { sortKey, sortAscending, onSort: sortBy };
-
+  const filterProps = { inventory, filters, onChange: changeFilter };
 
 
   return (
@@ -78,9 +95,9 @@ export default function Inventory() {
             />
           </label>
 
-          <FilterSelect label="Material" field="frameMaterial" filters={filters} onChange={changeFilter} />
-          <FilterSelect label="Glazing" field="glazing" filters={filters} onChange={changeFilter} />
-          <FilterSelect label="Condition" field="condition" filters={filters} onChange={changeFilter} />
+          <FilterSelect label="Material" field="frameMaterial" {...filterProps} />
+          <FilterSelect label="Glazing" field="glazing" {...filterProps} />
+          <FilterSelect label="Condition" field="condition" {...filterProps} />
 
           <label className={styles.field}>
             <span>Min width (mm)</span>
@@ -111,52 +128,23 @@ export default function Inventory() {
           </div>
         </div>
 
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <SortableHeader label="ID" column="id" {...sorting} />
-                <SortableHeader label="Material" column="frameMaterial" {...sorting} />
-                <SortableHeader label="Glazing" column="glazing" {...sorting} />
-                <SortableHeader label="Width (mm)" column="width" numeric {...sorting} />
-                <SortableHeader label="Height (mm)" column="height" numeric {...sorting} />
-                <SortableHeader label="Qty" column="quantity" numeric {...sorting} />
-                <SortableHeader label="Condition" column="condition" {...sorting} />
-                <SortableHeader label="Source" column="source" {...sorting} />
-              </tr>
-            </thead>
-            <tbody>
-              {visibleItems.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{capitalise(item.frameMaterial)}</td>
-                  <td>{capitalise(item.glazing)}</td>
-                  <td className={styles.numeric}>{item.width}</td>
-                  <td className={styles.numeric}>{item.height}</td>
-                  <td className={styles.numeric}>{item.quantity}</td>
-                  <td>
-                    <span
-                      className={`${styles.badge} ${styles["grade" + item.condition]}`}
-                      title={inventory.conditionGrades[item.condition]}
-                    >
-                      {item.condition}
-                    </span>
-                  </td>
-                  <td>{item.source}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <InventoryTable
+          items={visibleItems}
+          conditionGrades={inventory.conditionGrades}
+          sortKey={sortKey}
+          sortAscending={sortAscending}
+          onSort={sortBy}
+        />
 
-          {visibleItems.length === 0 && <p className={styles.empty}>No frames match these filters.</p>}
-        </div>
+        {visibleItems.length === 0 && <p className={styles.empty}>No frames match these filters.</p>}
       </div>
     </div>
+
   );
 }
 
-function FilterSelect({ label, field, filters, onChange }) {
-  const options = uniqueValues(field);
+function FilterSelect({ label, field, inventory, filters, onChange }) {
+  const options = uniqueValues(inventory.items, field);
 
   return (
     <label className={styles.field}>
@@ -173,25 +161,8 @@ function FilterSelect({ label, field, filters, onChange }) {
   );
 }
 
-// clickable heading
-function SortableHeader({ label, column, numeric, sortKey, sortAscending, onSort }) {
-  let arrow = "";
-  if (column === sortKey) {
-    arrow = sortAscending ? "▲" : "▼";
-  }
 
-  return (
-    <th className={numeric ? styles.numeric : undefined}>
-      <button type="button" onClick={() => onSort(column)}>
-        {label}
-        <span className={styles.sortArrow}>{arrow}</span>
-      </button>
-    </th>
-  );
-}
-
-
-// fliter matching
+//fliter matching
 function passesFilters(item, filters) {
   const search = filters.search.trim().toLowerCase();
   if (search !== "") {
@@ -218,8 +189,8 @@ function compareValues(a, b) {
 }
 
 // alphabetical order of fields
-function uniqueValues(field) {
-  const values = new Set(inventory.items.map((item) => item[field]));
+function uniqueValues(items, field) {
+  const values = new Set(items.map((item) => item[field]));
   return [...values].sort();
 }
 
