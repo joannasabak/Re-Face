@@ -1,14 +1,15 @@
 import Toggle from "./Toggle.jsx";
 import styles from "../ui/MatchSummary.module.css";
 
-// Compares the facade's panels with the inventory when the button is pressed,
-// then shows the counts per status and which frames would be used.
+// Compares the facade panels with the inventory
 export default function MatchSummary({
     panelCount,
     results,
     error,
     matching,
     onCompare,
+    settings,
+    onSettingChange,
     showMatches,
     onShowMatchesChange,
 }) {
@@ -16,6 +17,8 @@ export default function MatchSummary({
         <div className={styles.matchBox}>
             <h3>Inventory match</h3>
             <MatchDetails panelCount={panelCount} results={results} error={error} matching={matching} />
+       
+            <Toggle title="allowRotation" label="Allow rotating frames" val={settings.allowRotation} onUpdate={onSettingChange} />
 
             <button
                 type="button"
@@ -38,7 +41,7 @@ export default function MatchSummary({
     );
 }
 
-// The part that changes: a message while there's nothing to show, the numbers once there is
+
 function MatchDetails({ panelCount, results, error, matching }) {
     if (panelCount === 0) {
         return <p className={styles.message}>No tagged panels in this facade.</p>;
@@ -75,6 +78,7 @@ function MatchDetails({ panelCount, results, error, matching }) {
                 <StatusRow status="adapted" label="Fits with infill" count={summary.adapted} />
                 <StatusRow status="missing" label="No frame" count={summary.missing} />
             </ul>
+
             <p className={styles.message}>
                 {framesUsed.length > 0 ? "Frames used: " + framesUsed.join(", ") : "No frames used."}
             </p>

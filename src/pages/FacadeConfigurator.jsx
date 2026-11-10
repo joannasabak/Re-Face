@@ -27,6 +27,7 @@ export default function FacadeConfigurator({ active = true }) {
   const [matchError, setMatchError] = useState(null); // a message if matching failed
   const [matching, setMatching] = useState(false); // true while waiting for the API
   const [showMatches, setShowMatches] = useState(true); // colour the panels or not
+  const [matchSettings, setMatchSettings] = useState({ allowRotation: true }); // sent to the API
   const latestMatchRequest = useRef(0); // used to ignore answers that arrive too late
 
   const facade = FACADE_TYPES.find((f) => f.id === selectedId);
@@ -65,7 +66,7 @@ export default function FacadeConfigurator({ active = true }) {
     console.table(facadePanels);
 
     try {
-      const results = await matchPanels(facadePanels);
+      const results = await matchPanels(facadePanels, matchSettings);
       // the facade may have changed while we waited: only keep the answer if it's still current
       if (request === latestMatchRequest.current) {
         setMatchResults(results);
@@ -81,6 +82,15 @@ export default function FacadeConfigurator({ active = true }) {
         setMatching(false);
       }
     }
+  }
+
+  // called by the matching rule toggle as (newValue, settingName)
+  function updateMatchSetting(newValue, settingName) {
+    setMatchSettings({ ...matchSettings, [settingName]: newValue });
+    // the results were worked out with the old rules, so forget them
+    latestMatchRequest.current++;
+    setMatchResults(null);
+    setMatching(false);
   }
 
   // the matches to colour in the 3D view, or null for no colours
@@ -132,6 +142,8 @@ export default function FacadeConfigurator({ active = true }) {
           error={matchError}
           matching={matching}
           onCompare={compareWithInventory}
+          settings={matchSettings}
+          onSettingChange={updateMatchSetting}
           showMatches={showMatches}
           onShowMatchesChange={setShowMatches}
         />

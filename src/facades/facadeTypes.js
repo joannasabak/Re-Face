@@ -21,9 +21,11 @@ export const FACADE_TYPES = [
     thumbnail: foldingThumbnail,
     inputs: [
       // TODO: check these ranges against the Grasshopper definition
-      { type: "slider", name: "Density", min: 0.5, max: 10, step: 0.5, value: 0.5 },
+      { type: "slider", name: "Density", min: 0.5, max: 10, step: 0.1, value: 0.5 },
       { type: "slider", name: "Articulation", min: 0.1, max: 3, step: 0.1, value: 0.3 },
       { type: "toggle", name: "Pleat_direction", label: "Pleat direction", value: false },
+      { type: "toggle", name: "Divide_facade", label: "Divide facade", value: false },
+      { type: "slider", name: "Horizontal division", min: 1, max: 5, step: 1, value: 1 },
     ],
   },
   {

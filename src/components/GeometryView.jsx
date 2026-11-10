@@ -120,6 +120,7 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
       const { data, path, onUpdateMetadata, onUpdatePanels } = latestProps.current
       const request = ++latestRequest
       const result = await runCompute(data, path)
+      console.log(result.parts.length, "meshes:", result.parts.map((part) => part.tags))
 
       // skip this result if the page closed or a newer request was sent meanwhile
       if (disposed || request !== latestRequest) {
