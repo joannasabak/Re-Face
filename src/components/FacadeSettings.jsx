@@ -1,4 +1,4 @@
-// Builds the controls for one facade type from its list of inputs.
+//controls for one facade type from its list of inputs.
 import Slider from "./Slider.jsx";
 import Toggle from "./Toggle.jsx";
 import Dropdown from "./Dropdown.jsx";
@@ -11,7 +11,7 @@ export default function FacadeSettings({ facade, values, onUpdate }) {
   return (
     <div>
       {facade.inputs.map((input) => {
-        // the facade id in the key makes React create fresh controls when the facade changes
+        //the facade id in the key makes React create fresh controls when the facade changes
         const key = `${facade.id}-${input.name}`;
         const value = values[input.name] ?? input.value;
         const label = input.label ?? input.name;

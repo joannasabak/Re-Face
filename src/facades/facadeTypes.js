@@ -16,7 +16,7 @@ export const FACADE_TYPES = [
   {
     id: "folding",
     name: "Folding",
-    description: "Pleated panels that fold in and out",
+    description: "Serreted pattern",
     definition: foldingDefinition,
     thumbnail: foldingThumbnail,
     inputs: [
@@ -31,7 +31,7 @@ export const FACADE_TYPES = [
   {
     id: "stepping",
     name: "Stepping",
-    description: "Steps that follow a curve",
+    description: "Facade steps in and out creating scooped balconies",
     definition: steppingDefinition,
     thumbnail: steppingThumbnail,
     inputs: [
@@ -46,11 +46,10 @@ export const FACADE_TYPES = [
     definition: boxyDefinition,
     thumbnail: boxyThumbnail,
     inputs: [
-      { type: "slider", name: "Level Height", label: "Level height", min: 1, max: 7, step: 0.5, value: 4 },
-      { type: "slider", name: "width", label: "Box width", min: 0.5, max: 5, step: 0.1, value: 3 },
-      { type: "slider", name: "protrusion_max", label: "Max box protrusion", min: 0, max: 2, step: 0.1, value: 1 },
+      { type: "slider", name: "Level Height", label: "Level height", min: 1, max: 7, step: 0.25, value: 2.25 },
+      { type: "slider", name: "width", label: "Box width", min: 0.5, max: 5, step: 0.1, value: 2 },
+      { type: "slider", name: "protrusion_max", label: "Max box protrusion", min: 0, max: 2, step: 0.1, value: 0.4 },
       { type: "toggle", name: "flip_facade", label: "Flip facade", value: true },
-      // The definition also has these inputs; add them here once you know their ranges:
       // { type: "slider", name: "protrusion_min", label: "Min protrusion", min: 0, max: 2, step: 0.1, value: 0 },
       // { type: "slider", name: "horizontal_mullion", label: "Horizontal mullion", min: 0, max: 1, step: 0.05, value: 0.1 },
       // { type: "slider", name: "vertical_mullion", label: "Vertical mullion", min: 0, max: 1, step: 0.05, value: 0.1 },

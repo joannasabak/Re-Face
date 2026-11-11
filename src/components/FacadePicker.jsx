@@ -10,7 +10,7 @@ export default function FacadePicker({ facades, selectedId, onChange }) {
 
   const selected = facades.find((facade) => facade.id === selectedId) ?? facades[0];
 
-  // close when clicking anywhere outside the picker
+  //close when clicking anywhere outside the picker
   useEffect(() => {
     if (!open) return;
     function onPointerDown(event) {
@@ -30,7 +30,7 @@ export default function FacadePicker({ facades, selectedId, onChange }) {
     setOpen(false);
   }
 
-  // keyboard support: arrows to move, Enter/Space to pick, Escape to close
+  //keyboard support: arrows to move, Enter/Space to pick, Escape to close
   function onKeyDown(event) {
     if (!open) {
       if (["ArrowDown", "ArrowUp", "Enter", " "].includes(event.key)) {
