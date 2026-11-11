@@ -147,7 +147,7 @@ export default function FacadeConfigurator({ active = true }) {
           onShowMatchesChange={setShowMatches}
         />
 
-        <ModelSummary metadata={metadata} />
+        {/* <ModelSummary metadata={metadata} /> */}
       </div>
     </div>
   );

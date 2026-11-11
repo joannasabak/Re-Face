@@ -73,7 +73,7 @@ app.Run();
 
 
 
-//checks a /match request: returns a message about the first problem, or null if it's fine
+//checks for a match request
 static string? Validate(MatchRequest request, MatchSettings settings)
 {
     if (request.Panels is null || request.Panels.Count == 0)

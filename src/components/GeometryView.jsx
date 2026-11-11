@@ -28,7 +28,7 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
     let latestRequest = 0   // used to ignore results that arrive after a newer request
     let zoomedPath = null   // which definition the camera was last fitted to
 
-    // alpha: true makes the canvas see-through, so the page's graph paper shows behind the model
+ 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setClearColor(0x000000, 0)
     renderer.setSize(window.innerWidth, window.innerHeight)
@@ -132,7 +132,7 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
 
       onUpdateMetadata?.(result.metadata)
 
-      // swap the old facade for the new one: one three.js mesh per Rhino mesh
+      //swap the old facade for the new one: one three.js mesh per Rhino mesh
       clearModel()
       for (const part of result.parts) {
         const material = chooseMaterial(materials, part.tags)
@@ -141,10 +141,10 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
         model.add(mesh)
       }
 
-      // tell the page which panels this facade has, so it can ask the API for matches
+      //tell the page which panels this facade has, so it can ask the API for matches
       onUpdatePanels?.(collectPanels(result.parts))
 
-      // fit the camera the first time each definition loads, not on every slider change
+      //fit the camera the first time each definition loads, not on every slider change
       if (zoomedPath !== path) {
         zoomCameraToSelection(camera, controls, model.children)
         zoomedPath = path

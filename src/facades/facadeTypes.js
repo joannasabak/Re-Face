@@ -25,7 +25,7 @@ export const FACADE_TYPES = [
       { type: "slider", name: "Articulation", min: 0.1, max: 3, step: 0.1, value: 0.3 },
       { type: "toggle", name: "Pleat_direction", label: "Pleat direction", value: false },
       { type: "toggle", name: "Divide_facade", label: "Divide panels", value: false },
-      { type: "slider", name: "Horizontal division", min: 1, max: 5, step: 1, value: 2 },
+      { type: "slider", name: "Horizontal division", label: "Horizontal subdivisions", min: 2, max: 5, step: 1, value: 2 },
     ],
   },
   {
