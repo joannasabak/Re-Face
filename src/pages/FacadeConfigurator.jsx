@@ -11,7 +11,7 @@ import { FACADE_TYPES, defaultValues } from "../facades/facadeTypes.js";
 import styles from "../ui/Sidebar.module.css";
 
 //settings are saved in the browser
-const STORAGE_KEY = "re-face:configurator:v1";
+const STORAGE_KEY = "re-face:configurator:v2";
 
 export default function FacadeConfigurator({ active = true }) {
   const [saved] = useState(loadSettings);
