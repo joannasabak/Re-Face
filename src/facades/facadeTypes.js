@@ -21,11 +21,11 @@ export const FACADE_TYPES = [
     thumbnail: foldingThumbnail,
     inputs: [
       // TODO: check these ranges against the Grasshopper definition
-      { type: "slider", name: "Density", min: 0.5, max: 10, step: 0.1, value: 0.5 },
+      { type: "slider", name: "Panel size", min: 0.8, max: 5, step: 0.1, value: 1.0 },
       { type: "slider", name: "Articulation", min: 0.1, max: 3, step: 0.1, value: 0.3 },
       { type: "toggle", name: "Pleat_direction", label: "Pleat direction", value: false },
-      { type: "toggle", name: "Divide_facade", label: "Divide facade", value: false },
-      { type: "slider", name: "Horizontal division", min: 1, max: 5, step: 1, value: 1 },
+      { type: "toggle", name: "Divide_facade", label: "Divide panels", value: false },
+      { type: "slider", name: "Horizontal division", min: 1, max: 5, step: 1, value: 2 },
     ],
   },
   {
@@ -35,7 +35,8 @@ export const FACADE_TYPES = [
     definition: steppingDefinition,
     thumbnail: steppingThumbnail,
     inputs: [
-      { type: "slider", name: "Step size", min: 0, max: 10, step: 0.1, value: 0.5 },
+      { type: "slider", name: "Panel Width", min: 0.5, max: 5, step: 0.1, value: 1.5 },
+      { type: "slider", name: "Step max depth", min: 0, max: 2.0, step: 0.1, value: 1.0 },
     ],
   },
   {
@@ -45,9 +46,9 @@ export const FACADE_TYPES = [
     definition: boxyDefinition,
     thumbnail: boxyThumbnail,
     inputs: [
-      { type: "slider", name: "width", label: "Width", min: 0.5, max: 5, step: 0.1, value: 3 },
-      { type: "slider", name: "protrusion_max", label: "Max protrusion", min: 0, max: 2, step: 0.1, value: 1 },
-      { type: "slider", name: "lvl_height", label: "Level height", min: 1, max: 7, step: 0.5, value: 4 },
+      { type: "slider", name: "Level Height", label: "Level height", min: 1, max: 7, step: 0.5, value: 4 },
+      { type: "slider", name: "width", label: "Box width", min: 0.5, max: 5, step: 0.1, value: 3 },
+      { type: "slider", name: "protrusion_max", label: "Max box protrusion", min: 0, max: 2, step: 0.1, value: 1 },
       { type: "toggle", name: "flip_facade", label: "Flip facade", value: true },
       // The definition also has these inputs; add them here once you know their ranges:
       // { type: "slider", name: "protrusion_min", label: "Min protrusion", min: 0, max: 2, step: 0.1, value: 0 },

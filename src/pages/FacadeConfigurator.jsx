@@ -10,18 +10,17 @@ import { FACADE_TYPES, defaultValues } from "../facades/facadeTypes.js";
 
 import styles from "../ui/Sidebar.module.css";
 
-// Settings are saved in the browser (localStorage) so they survive a page refresh.
-// Change the version number if the saved format ever changes, to start fresh.
+//settings are saved in the browser
 const STORAGE_KEY = "re-face:configurator:v1";
 
 export default function FacadeConfigurator({ active = true }) {
   const [saved] = useState(loadSettings);
   const [selectedId, setSelectedId] = useState(saved.selectedId);
-  // settings for every facade type, so switching back keeps what you set
+  //settings for every facade type
   const [valuesById, setValuesById] = useState(saved.valuesById);
   const [metadata, setMetadata] = useState([]);
 
-  // panel matching
+  //panel matching
   const [facadePanels, setFacadePanels] = useState([]); // the tagged panels of the current geometry
   const [matchResults, setMatchResults] = useState(null); // the answer from /match, or null
   const [matchError, setMatchError] = useState(null); // a message if matching failed

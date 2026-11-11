@@ -58,7 +58,7 @@ function MatchDetails({ panelCount, results, error, matching }) {
     if (results === null) {
         return (
             <p className={styles.message}>
-                {panelCount} panels in this facade. Compare them with the inventory to see which frames fit.
+                {panelCount} panels in this facade.
             </p>
         );
     }

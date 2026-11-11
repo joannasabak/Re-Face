@@ -9,7 +9,7 @@ function toDisplayString(value) {
 export default function ModelSummary({ metadata }) {
   return (
     <div className={styles.summaryBox}>
-      <h3>Output from Grasshopper:</h3>
+      <h3></h3>
       <div className="shadow-border">
         <div className={styles.metadata}>
           {metadata.map((item, index) => (
