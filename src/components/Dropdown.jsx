@@ -1,6 +1,6 @@
 import styles from "../ui/Dropdown.module.css";
 
-//inputs come from grasshopper
+//from gh
 export default function Dropdown({ title, label, options, val, onUpdate }) {
 
     //inputs compared as text

@@ -16,9 +16,18 @@ export default function MatchSummary({
     return (
         <div className={styles.matchBox}>
             <h3>Inventory match</h3>
-            <MatchDetails panelCount={panelCount} results={results} error={error} matching={matching} />
-       
             <Toggle title="allowRotation" label="Allow rotating frames" val={settings.allowRotation} onUpdate={onSettingChange} />
+
+            <MatchDetails panelCount={panelCount} results={results} error={error} matching={matching} />
+
+            {results !== null && (
+                <Toggle
+                    title="showMatches"
+                    label="Colour panels by match"
+                    val={showMatches}
+                    onUpdate={(value) => onShowMatchesChange(value)}
+                />
+            )}
 
             <button
                 type="button"
@@ -29,14 +38,6 @@ export default function MatchSummary({
                 {matching ? "Comparing…" : "Compare with inventory"}
             </button>
 
-            {results !== null && (
-                <Toggle
-                    title="showMatches"
-                    label="Colour panels by match"
-                    val={showMatches}
-                    onUpdate={(value) => onShowMatchesChange(value)}
-                />
-            )}
         </div>
     );
 }
@@ -76,7 +77,7 @@ function MatchDetails({ panelCount, results, error, matching }) {
             <ul className={styles.counts}>
                 <StatusRow status="exact" label="Exact fit" count={summary.exact} />
                 <StatusRow status="adapted" label="Fits with infill" count={summary.adapted} />
-                <StatusRow status="missing" label="No frame" count={summary.missing} />
+                <StatusRow status="missing" label="No frames matching" count={summary.missing} />
             </ul>
 
             <p className={styles.message}>
@@ -86,7 +87,6 @@ function MatchDetails({ panelCount, results, error, matching }) {
     );
 }
 
-// One line: a coloured dot, a label and a number
 function StatusRow({ status, label, count }) {
     return (
         <li>

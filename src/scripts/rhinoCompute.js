@@ -3,7 +3,7 @@ import RhinoCompute from "compute-rhino3d"
 import { BufferGeometryLoader } from "three";
 import { store } from "../stores/computeStore.js";
 
-// Local RhinoCompute endpoint  
+//local RhinoCompute endpoint  
 RhinoCompute.url = "http://localhost:6500/"
 
 
@@ -14,22 +14,55 @@ RhinoCompute.url = "http://localhost:6500/"
 let rhino, res
 let rhinoPromise
 let pendingRequests = 0
+
+//cache definition elements so compute sends input/output types once
 const definitionCache = new Map()
+
+//cache geometry results so they reload instantly if going back to settings
+const MAX_SAVED_RESULTS = 25
+const savedResults = new Map()
+
 const geometryLoader = new BufferGeometryLoader();
+
 
 async function runCompute(data, path) {
   pendingRequests++;
   store.computing = true;
   try {
-    const def = await loadGH(path);
-    res = await compute(def, data);
+    const key = path + " " + JSON.stringify(data);
+
+    if (savedResults.has(key)) {
+      res = savedResults.get(key);
+      savedResults.delete(key);
+      savedResults.set(key, res);
+    } else {
+      const def = await loadGH(path);
+      res = await compute(def, data);
+      saveResult(key, res);
+    }
+
     const conversionStart = performance.now();
     const result = toThree(res);
     console.log(`Conversion to three.js: ${((performance.now() - conversionStart) / 1000).toFixed(3)} seconds`);
     return result;
+    
   } finally {
     pendingRequests--;
     store.computing = pendingRequests > 0;
+  }
+}
+
+//saves up to 25 results in the browser memory
+function saveResult(key, result) {
+  if (result.errors?.length) {
+    return;
+  }
+  
+  savedResults.set(key, result);
+
+  if (savedResults.size > MAX_SAVED_RESULTS) {
+    const lastKey = savedResults.keys().next().value;
+    savedResults.delete(lastKey);
   }
 }
 
@@ -105,7 +138,7 @@ function toThree(res) {
       for (const item of branch) {
         const data = JSON.parse(item.data);
 
-        //not geometry
+        //for objects that are not geometry
         if (!String(item.type).includes("Geometry")) {
           metadata.push({ name: output.ParamName, value: data });
           continue;
@@ -118,6 +151,7 @@ function toThree(res) {
           continue;
         }
 
+        //geometry objects converted to three.js wuth their tags
         if (rhinoObject instanceof rhino.Mesh) {
           const threeJson = rhinoObject.toThreejsJSON();
           const geometry = geometryLoader.parse(threeJson);
@@ -139,6 +173,8 @@ function toThree(res) {
   return { parts: parts, metadata: metadata };
 }
 
+
+//reads tags from gh including material and panel sizes
 function readTags(rhinoObject) {
   const tags = {};
   const pairs = rhinoObject.getUserStrings();

@@ -79,8 +79,7 @@ export default function Inventory() {
             <p className={styles.subtitle}>Salvaged window frames available for reuse</p>
           </div>
           <p className={styles.summary}>
-            Showing <strong>{visibleItems.length}</strong> of {inventory.items.length} types ·{" "}
-            <strong>{frameCount}</strong> frames
+            {inventory.items.length} types ·{" "} <strong>{frameCount}</strong> frames
           </p>
         </div>
 

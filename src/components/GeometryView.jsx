@@ -3,10 +3,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { runCompute, loadRhino } from '../scripts/rhinoCompute.js';
+import { createMaterials, chooseMaterial, disposeMaterials } from '../scripts/materials.js';
 
-// active = false pauses drawing while the page is hidden; results still load in the background
-// onUpdatePanels is called with the tagged panels each time new geometry arrives
-// matches (the API's list of panel matches, or null) colours the panels by their match
+//active = false pauses drawing while the page is hidden; results still load in the background
+//onUpdatePanels is called with the tagged panels each time new geometry arrives
 export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePanels, matches, active = true }) {
   const containerRef = useRef(null)
   const computeRef = useRef(null)
@@ -25,8 +25,8 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
     const container = containerRef.current
     let disposed = false
     let animationId = null
-    let latestRequest = 0   // used to ignore results that arrive after a newer request
-    let zoomedPath = null   // which definition the camera was last fitted to
+    let latestRequest = 0
+    let zoomedPath = null
 
  
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -40,33 +40,29 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
     camera.up.set(0, 0, 1)
 
     const scene = new THREE.Scene()
-    // no scene.background: the paper background comes from the page CSS
 
     const controls = new OrbitControls(camera, renderer.domElement)
 
-    // soft, even light
+    //light settings
     scene.add(new THREE.HemisphereLight(0xffffff, 0xc9dcef, 1))
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5)
-    // A new light's default position follows THREE.Object3D.DEFAULT_UP, which changes
-    // once any view has set it, so set the position explicitly.
     directionalLight.position.set(0, 1, 0)
     scene.add(directionalLight)
 
-    // a soft "photo studio" all around the model, so smooth surfaces like glass have something to reflect
+    //room environment for reflective srfs
     const pmremGenerator = new THREE.PMREMGenerator(renderer)
     const environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture
     scene.environment = environment
     scene.environmentIntensity = 0.5 // the lights below do most of the lighting
     pmremGenerator.dispose()
-
-    // how each material from Grasshopper looks (the "material" user string)
+    
     const materials = createMaterials()
 
-    // a group that holds all the meshes of the current facade
+    //group that holds all the meshes of the current facade
     const model = new THREE.Group()
     scene.add(model)
 
-    // removes the current facade from the scene and frees its memory
+    //removes the current facade from the scene and frees its memory
     function clearModel() {
       for (const child of [...model.children]) {
         model.remove(child)
@@ -74,7 +70,7 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
       }
     }
 
-    // gives every mesh its material: its normal one, or a match colour if it's a matched panel
+    //gives every mesh its material: its normal one, or a match colour if it's a matched panel
     function highlight(matches) {
       // look-up table: panel id -> status, e.g. { "0": "exact", "1": "missing" }
       const statusById = {}
@@ -168,7 +164,7 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
     }
     start()
 
-    // React calls this when the component is removed from the page
+    //when the component is removed from the page
     return () => {
       disposed = true
       computeRef.current = null
@@ -178,9 +174,7 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
       window.removeEventListener('resize', onResize)
       controls.dispose()
       clearModel()
-      for (const material of Object.values(materials)) {
-        material.dispose()
-      }
+      disposeMaterials(materials);
       environment.dispose()
       renderer.dispose()
       renderer.forceContextLoss()
@@ -218,65 +212,6 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
   )
 }
 
-// One three.js material per kind of material tag. Add a line here for a new one, e.g. "infill".
-function createMaterials() {
-  return {
-    // anything without a known material tag
-    default: new THREE.MeshStandardMaterial({
-      color: 0xc8ced6, // light grey
-      metalness: 0,
-      roughness: 0.8,
-      side: THREE.DoubleSide,
-    }),
-
-    frame: new THREE.MeshStandardMaterial({
-      color: 0x3b4a5a, // dark blue-grey
-      metalness: 0.4,
-      roughness: 0.5,
-      side: THREE.DoubleSide,
-    }),
-
-    glass: new THREE.MeshPhysicalMaterial({
-      color: 0xcfe3f2, // a slight blue tint
-      metalness: 0,
-      roughness: 0.05, // very smooth, so it reflects the environment
-      transparent: true,
-      opacity: 0.3,
-      depthWrite: false, // see-through objects shouldn't hide what's behind them
-      side: THREE.DoubleSide,
-    }),
-
-    // panel matching: "match-" + the status the API sends back for each panel
-    "match-exact": createMatchMaterial(0x3fa36b),   // green
-    "match-adapted": createMatchMaterial(0xe0a030), // amber
-    "match-missing": createMatchMaterial(0xd0453c), // red
-  }
-}
-
-// A coloured, slightly see-through material for highlighting matched panels
-function createMatchMaterial(color) {
-  return new THREE.MeshPhysicalMaterial({
-    color: color,
-    metalness: 0,
-    roughness: 0.3,
-    transparent: true,
-    opacity: 0.75,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-  })
-}
-
-// Picks the material for one mesh from its tags, e.g. { material: "glass" } -> the glass material
-function chooseMaterial(materials, tags) {
-  const material = materials[tags.material]
-  if (material === undefined) {
-    return materials.default
-  }
-  return material
-}
-
-// The panels to send to /match: every mesh tagged part = "panel", as { id, width, height } in mm.
-// User strings are text, so the sizes are turned into numbers here.
 function collectPanels(parts) {
   const panels = []
   for (const part of parts) {

@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
-// Holds the inputs sent to Rhino.Compute. updateValue(newValue, parameterName)
-// only changes parameters that were declared in the initial object.
+//holds the inputs sent to Rhino.Compute updateValue(newValue, parameterName)
+//only changes parameters that were declared in the initial object.
 export function useInputs(initialInputs) {
   const [inputs, setInputs] = useState(initialInputs);
 
