@@ -227,7 +227,12 @@ function collectPanels(parts) {
       continue
     }
 
-    panels.push({ id: tags.panel_id, width: width, height: height })
+    let mass = Number(tags.mass)
+    if (Number.isNaN(mass)) {
+      mass = 0
+    }
+
+    panels.push({ id: tags.panel_id, width: width, height: height, mass: mass  })
   }
   return panels
 }

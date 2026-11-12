@@ -69,6 +69,23 @@ app.MapPost("/match", (MatchRequest request, IInventoryPlaceholder inventory) =>
     return Results.Ok(results);
 });
 
+//endpoint for carbon values
+app.MapGet("/carbon/{material}", (string material) =>
+{
+    var factor = app.Configuration.GetSection("CarbonFactors:" + material);
+    if (!factor.Exists())
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(new
+    {
+        material = material,
+        carbonPerKg = factor.GetValue<double>("CarbonPerKg"),
+        source = factor.GetValue<string>("Source"),
+    });
+});
+
 app.Run();
 
 
@@ -128,20 +145,3 @@ static bool IsOriginAllowed(string origin, string[] allowedOrigins, bool isDevel
 
     return false;
 }
-
-//endpoint for carbon values
-app.MapGet("/carbon/{material}", (string material) =>
-{
-    var factor = app.Configuration.GetSection("CarbonFactors:" + material);
-    if (!factor.Exists())
-    {
-        return Results.NotFound();
-    }
-
-    return Results.Ok(new
-    {
-        material = material,
-        carbonPerKg = factor.GetValue<double>("CarbonPerKg"),
-        source = factor.GetValue<string>("Source"),
-    });
-});

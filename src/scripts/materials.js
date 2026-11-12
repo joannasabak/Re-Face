@@ -10,9 +10,9 @@ export const MATERIAL_LIBRARY = {
     context: { color: "#e4e7eb", metalness: 0, roughness: 1 },
  
     //overlays
-    "match-exact": { color: "#278062", metalness: 0, roughness: 0.3, opacity: 0.85 },   // deep green
-    "match-adapted": { color: "#8fc4a4", metalness: 0, roughness: 0.3, opacity: 0.85 }, // light green
-    "match-missing": { color: "#d9776e", metalness: 0, roughness: 0.3, opacity: 0.35 }, // soft red
+    "match-exact": { color: "#278062", metalness: 0, roughness: 0.3, opacity: 0.85 },   //green
+    "match-adapted": { color: "#fec300", metalness: 0, roughness: 0.3, opacity: 0.85 }, //yellow
+    "match-missing": { color: "#d9776e", metalness: 0, roughness: 0.3, opacity: 0.35 }, //red
 };
  
 export function createMaterials() {

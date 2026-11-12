@@ -4,7 +4,7 @@ import styles from "../ui/ChartsPanel.module.css";
 const COLORS = {
     exact: "#278062",
     adapted: "#8fc4a4",
-    missing: "#d9776e",
+    missing: "#d6cfcf",
 };
 
 export default function ChartsPanel({ results, panels, carbonFactor, onClose }) {
@@ -30,6 +30,15 @@ export default function ChartsPanel({ results, panels, carbonFactor, onClose }) 
 
     const carbonSaved = reusedMass * carbonFactor.carbonPerKg;
 
+    const framesUsed = [];
+    let totalFrames = 0;
+    for (const itemId of Object.keys(summary.framesUsed)) {
+        const count = summary.framesUsed[itemId];
+        framesUsed.push({ itemId: itemId, count: count });
+        totalFrames += count;
+    }
+    framesUsed.sort((a, b) => b.count - a.count);
+
     return (
         <aside className={styles.panel}>
             <div className={styles.header}>
@@ -38,14 +47,13 @@ export default function ChartsPanel({ results, panels, carbonFactor, onClose }) 
                     x
                 </button>
             </div>
+            <hr />
 
             <div className={styles.carbon}>
                 <p className={styles.carbonNumber}>{Math.round(carbonSaved)} kg CO₂e saved</p>
-                <p>by reusing {Math.round(reusedMass)} kg of glass</p>
-                <p className={styles.source}>Source: {carbonFactor.source}</p>
             </div>
 
-            <h3>Facade by match</h3>
+            <h3>Reused panels:</h3>
             <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
                     <Pie
@@ -72,6 +80,23 @@ export default function ChartsPanel({ results, panels, carbonFactor, onClose }) 
                     </li>
                 ))}
             </ul>
+
+            {framesUsed.length > 0 && (
+                // <details> is a built-in HTML box that opens and closes when you click its <summary>
+                <details className={styles.framesUsed}>
+                    <summary>
+                        Frames used ({totalFrames} frames, {framesUsed.length} inventory items)
+                    </summary>
+                    <ul>
+                        {framesUsed.map((frame) => (
+                            <li key={frame.itemId}>
+                                <span>{frame.itemId}</span>
+                                <strong>× {frame.count}</strong>
+                            </li>
+                        ))}
+                    </ul>
+                </details>
+            )}
         </aside>
     );
 }

@@ -46,3 +46,35 @@
 .resetButton:hover {
   background-color: var(--accent-wash);
 }
+
+.startScreen {
+  position: fixed;
+  top: 80px; /* below the navbar */
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-left: 440px;
+  color: var(--ink-soft);
+}
+ 
+.startButton {
+  padding: 14px 28px;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+}
+ 
+.startButton:hover {
+  filter: brightness(1.1);
+}

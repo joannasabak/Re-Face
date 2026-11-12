@@ -4,6 +4,10 @@
     <ProjectReference Include="..\ReFace.Core\ReFace.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Watch Include="Data\**\*.json" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>

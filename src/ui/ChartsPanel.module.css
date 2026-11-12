@@ -38,8 +38,7 @@
 
 .carbon {
     margin-top: 12px;
-    padding: 12px 14px;
-    background-color: var(--accent-wash);
+    padding: 0;
     border-radius: var(--radius-small);
 }
 
@@ -51,12 +50,7 @@
 .carbon .carbonNumber {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--ink);
-}
-
-.carbon .source {
-    margin: 6px 0 0;
-    font-size: 0.75rem;
+    color: green;
 }
 
 .legend {
@@ -90,4 +84,33 @@
     border-radius: var(--radius-small);
     box-shadow: var(--card-shadow);
     cursor: pointer;
+}
+
+.framesUsed {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+}
+
+.framesUsed summary {
+    padding: 8px 10px;
+    color: var(--ink-soft);
+    cursor: pointer;
+}
+
+.framesUsed ul {
+    max-height: 200px;
+    /* long lists scroll instead of making the panel very tall */
+    overflow-y: auto;
+    margin: 0;
+    padding: 0 10px 8px;
+    list-style: none;
+}
+
+.framesUsed li {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    border-top: 1px solid var(--line);
 }

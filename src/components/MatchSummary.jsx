@@ -79,10 +79,6 @@ function MatchDetails({ panelCount, results, error, matching }) {
                 <StatusRow status="adapted" label="Fits with infill" count={summary.adapted} />
                 <StatusRow status="missing" label="No frames matching" count={summary.missing} />
             </ul>
-
-            <p className={styles.message}>
-                {framesUsed.length > 0 ? "Frames used: " + framesUsed.join(", ") : "No frames used."}
-            </p>
         </div>
     );
 }

@@ -32,6 +32,7 @@ export default function FacadeConfigurator({ active = true }) {
   const latestMatchRequest = useRef(0); //ignore answers that arrive too late
   const [chartsOpen, setChartsOpen] = useState(false); //charts sidebar on the right
   const [carbonFactor, setCarbonFactor] = useState(null);
+  const [started, setStarted] = useState(false);
 
   const facade = FACADE_TYPES.find((f) => f.id === selectedId);
   const inputs = valuesById[selectedId];
@@ -117,56 +118,68 @@ export default function FacadeConfigurator({ active = true }) {
 
   return (
     <div>
-      <GeometryView
-        data={inputs}
-        path={facade.definition}
-        onUpdateMetadata={setMetadata}
-        onUpdatePanels={updatePanels}
-        matches={shownMatches}
-        active={active}
+      {started ? (
+        <GeometryView
+          data={inputs}
+          path={facade.definition}
+          onUpdateMetadata={setMetadata}
+          onUpdatePanels={updatePanels}
+          matches={shownMatches}
+          active={active}
+        />
+      ) : (
+        <div className={styles.startScreen}>
+          <button type="button" className={styles.startButton} onClick={() => setStarted(true)}>
+            Start configurator
+          </button>
+        </div>
+      )}
+
+      < div className={styles.sidebar}>
+      <h2>Facade type</h2>
+      <hr />
+      <FacadePicker facades={FACADE_TYPES} selectedId={selectedId} onChange={selectFacade} />
+
+      <h2 className={styles.sectionTitle}>Settings</h2>
+      <hr />
+      <FacadeSettings facade={facade} values={inputs} onUpdate={updateValue} />
+      <button type="button" className={styles.resetButton} onClick={resetSettings}>
+        Reset settings
+      </button>
+
+      <MatchSummary
+        panelCount={facadePanels.length}
+        results={matchResults}
+        error={matchError}
+        matching={matching}
+        onCompare={compareWithInventory}
+        settings={matchSettings}
+        onSettingChange={updateMatchSetting}
+        showMatches={showMatches}
+        onShowMatchesChange={setShowMatches}
       />
 
-      <div className={styles.sidebar}>
-        <h2>Facade type</h2>
-        <hr />
-        <FacadePicker facades={FACADE_TYPES} selectedId={selectedId} onChange={selectFacade} />
-
-        <h2 className={styles.sectionTitle}>Settings</h2>
-        <hr />
-        <FacadeSettings facade={facade} values={inputs} onUpdate={updateValue} />
-        <button type="button" className={styles.resetButton} onClick={resetSettings}>
-          Reset settings
-        </button>
-
-        <MatchSummary
-          panelCount={facadePanels.length}
-          results={matchResults}
-          error={matchError}
-          matching={matching}
-          onCompare={compareWithInventory}
-          settings={matchSettings}
-          onSettingChange={updateMatchSetting}
-          showMatches={showMatches}
-          onShowMatchesChange={setShowMatches}
-        />
-
-        {/* <ModelSummary metadata={metadata} /> */}
-      </div>
-
-      {matchResults !== null && !chartsOpen && (
-        <button type="button" className={chartsStyles.openButton} onClick={() => setChartsOpen(true)}>
-          📊 Results
-        </button>
-      )}
-      {matchResults !== null && chartsOpen && (
-        <ChartsPanel
-          results={matchResults}
-          panels={facadePanels}
-          carbonFactor={carbonFactor}
-          onClose={() => setChartsOpen(false)}
-        />
-      )}
+      {/* <ModelSummary metadata={metadata} /> */}
     </div>
+
+      {
+    matchResults !== null && !chartsOpen && (
+      <button type="button" className={chartsStyles.openButton} onClick={() => setChartsOpen(true)}>
+        Results
+      </button>
+    )
+  }
+  {
+    matchResults !== null && chartsOpen && (
+      <ChartsPanel
+        results={matchResults}
+        panels={facadePanels}
+        carbonFactor={carbonFactor}
+        onClose={() => setChartsOpen(false)}
+      />
+    )
+  }
+    </div >
   );
 }
 
