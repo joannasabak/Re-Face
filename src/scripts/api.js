@@ -37,3 +37,7 @@ export function matchPanels(panels, settings) {
         body: JSON.stringify({ panels: panels, settings: settings}),
     });
 }
+
+export function getCarbonFactor(material) {
+    return request("/carbon/" + material);
+}

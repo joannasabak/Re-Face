@@ -1,0 +1,8 @@
+{
+    "CarbonFactors": {
+        "glass": {
+            "CarbonPerKg": 0.971,
+            "Source": "ÖKOBAUDAT: Flachglas, Bundesverband Flachglas e.V. (dc96eace-0094-4440-9331-f72fb9430656), GWP A1-A3"
+        }
+    }
+}

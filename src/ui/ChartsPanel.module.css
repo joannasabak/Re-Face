@@ -1,0 +1,93 @@
+.panel {
+    position: fixed;
+    top: 120px;
+    right: 40px;
+    width: 340px;
+    padding: 1.2rem 1.3rem;
+    z-index: 10;
+    color: var(--ink);
+    background-color: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.closeButton {
+    font-size: 1.4rem;
+    color: var(--ink-soft);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.panel h3 {
+    margin: 1.2rem 0 0;
+    font-size: 0.95rem;
+}
+
+.carbon {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background-color: var(--accent-wash);
+    border-radius: var(--radius-small);
+}
+
+.carbon p {
+    margin: 0 0 4px;
+    color: var(--ink-soft);
+}
+
+.carbon .carbonNumber {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.carbon .source {
+    margin: 6px 0 0;
+    font-size: 0.75rem;
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border-radius: 50%;
+}
+
+.openButton {
+    position: fixed;
+    top: 120px;
+    right: 40px;
+    z-index: 10;
+    padding: 8px 14px;
+    font: inherit;
+    color: #ffffff;
+    background-color: var(--accent);
+    border: none;
+    border-radius: var(--radius-small);
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+}

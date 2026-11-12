@@ -5,10 +5,12 @@ import FacadePicker from "../components/FacadePicker.jsx";
 import FacadeSettings from "../components/FacadeSettings.jsx";
 import ModelSummary from "../components/ModelSummary.jsx";
 import MatchSummary from "../components/MatchSummary.jsx";
-import { matchPanels } from "../scripts/api.js";
+import ChartsPanel from "../components/ChartsPanel.jsx";
+import { matchPanels, getCarbonFactor } from "../scripts/api.js";
 import { FACADE_TYPES, defaultValues } from "../facades/facadeTypes.js";
 
 import styles from "../ui/Sidebar.module.css";
+import chartsStyles from "../ui/ChartsPanel.module.css";
 
 //settings are saved in the browser
 const STORAGE_KEY = "re-face:configurator:v2";
@@ -21,13 +23,15 @@ export default function FacadeConfigurator({ active = true }) {
   const [metadata, setMetadata] = useState([]);
 
   //panel matching
-  const [facadePanels, setFacadePanels] = useState([]); // the tagged panels of the current geometry
-  const [matchResults, setMatchResults] = useState(null); // the answer from /match, or null
-  const [matchError, setMatchError] = useState(null); // a message if matching failed
-  const [matching, setMatching] = useState(false); // true while waiting for the API
-  const [showMatches, setShowMatches] = useState(true); // colour the panels or not
-  const [matchSettings, setMatchSettings] = useState({ allowRotation: true }); // sent to the API
-  const latestMatchRequest = useRef(0); // used to ignore answers that arrive too late
+  const [facadePanels, setFacadePanels] = useState([]); //tagged panels of current geometry
+  const [matchResults, setMatchResults] = useState(null); //answer from /match or null
+  const [matchError, setMatchError] = useState(null); //message if matching failed
+  const [matching, setMatching] = useState(false); //true while waiting for the API
+  const [showMatches, setShowMatches] = useState(true); //colour the panels or not
+  const [matchSettings, setMatchSettings] = useState({ allowRotation: true }); //sent to the API
+  const latestMatchRequest = useRef(0); //ignore answers that arrive too late
+  const [chartsOpen, setChartsOpen] = useState(false); //charts sidebar on the right
+  const [carbonFactor, setCarbonFactor] = useState(null);
 
   const facade = FACADE_TYPES.find((f) => f.id === selectedId);
   const inputs = valuesById[selectedId];
@@ -43,9 +47,9 @@ export default function FacadeConfigurator({ active = true }) {
     setMetadata([]);
   }
 
-  // called by GeometryView every time new geometry arrives, with the panels it found
+  //called by GeometryView every time new geometry arrives
   function updatePanels(panels) {
-    // results (or an answer still on its way) belong to the old geometry, so forget them
+
     latestMatchRequest.current++;
     setFacadePanels(panels);
     setMatchResults(null);
@@ -53,7 +57,7 @@ export default function FacadeConfigurator({ active = true }) {
     setMatching(false);
   }
 
-  // called by the "Compare with inventory" button
+  //called by the "Compare with inventory" button
   async function compareWithInventory() {
     latestMatchRequest.current++;
     const request = latestMatchRequest.current;
@@ -66,9 +70,11 @@ export default function FacadeConfigurator({ active = true }) {
 
     try {
       const results = await matchPanels(facadePanels, matchSettings);
-      // the facade may have changed while we waited: only keep the answer if it's still current
+      const factor = await getCarbonFactor("glass");
+      //facade may have changed while we waited
       if (request === latestMatchRequest.current) {
         setMatchResults(results);
+        setCarbonFactor(factor);
         setShowMatches(true);
       }
     } catch (error) {
@@ -76,34 +82,31 @@ export default function FacadeConfigurator({ active = true }) {
         setMatchError(error.message);
       }
     } finally {
-      // runs after try or catch, whichever happened
       if (request === latestMatchRequest.current) {
         setMatching(false);
       }
     }
   }
 
-  // called by the matching rule toggle as (newValue, settingName)
+  //called by the matching rule toggle as (newValue, settingName)
   function updateMatchSetting(newValue, settingName) {
     setMatchSettings({ ...matchSettings, [settingName]: newValue });
-    // the results were worked out with the old rules, so forget them
     latestMatchRequest.current++;
     setMatchResults(null);
     setMatching(false);
   }
 
-  // the matches to colour in the 3D view, or null for no colours
+  //matches to colour in the 3D view
   let shownMatches = null;
   if (showMatches && matchResults !== null) {
     shownMatches = matchResults.matches;
   }
 
-  // put the current facade's settings back to their starting values
   function resetSettings() {
     setValuesById({ ...valuesById, [selectedId]: defaultValues(facade) });
   }
 
-  // called by the sliders/toggles as (newValue, inputName)
+  //called by the sliders/toggles as (newValue, inputName)
   function updateValue(newValue, inputName) {
     setValuesById((current) => {
       const values = current[selectedId];
@@ -149,6 +152,20 @@ export default function FacadeConfigurator({ active = true }) {
 
         {/* <ModelSummary metadata={metadata} /> */}
       </div>
+
+      {matchResults !== null && !chartsOpen && (
+        <button type="button" className={chartsStyles.openButton} onClick={() => setChartsOpen(true)}>
+          📊 Results
+        </button>
+      )}
+      {matchResults !== null && chartsOpen && (
+        <ChartsPanel
+          results={matchResults}
+          panels={facadePanels}
+          carbonFactor={carbonFactor}
+          onClose={() => setChartsOpen(false)}
+        />
+      )}
     </div>
   );
 }

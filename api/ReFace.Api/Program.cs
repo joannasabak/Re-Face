@@ -6,7 +6,7 @@ using ReFace.Core;
 using ReFace.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Configuration.AddJsonFile(Path.Combine("Data", "carbonfactors.json"), optional: false, reloadOnChange: true);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -128,3 +128,20 @@ static bool IsOriginAllowed(string origin, string[] allowedOrigins, bool isDevel
 
     return false;
 }
+
+//endpoint for carbon values
+app.MapGet("/carbon/{material}", (string material) =>
+{
+    var factor = app.Configuration.GetSection("CarbonFactors:" + material);
+    if (!factor.Exists())
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(new
+    {
+        material = material,
+        carbonPerKg = factor.GetValue<double>("CarbonPerKg"),
+        source = factor.GetValue<string>("Source"),
+    });
+});
