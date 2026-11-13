@@ -28,14 +28,17 @@ public static class PanelMatcher
 
         //panel order
         //if one can has a single position it's chosen firts 
-        var order = panels
-        .OrderBy(panel => CountPossibleItems(panel, items, stock, settings))
-        .ThenByDescending(panel => panel.Width * panel.Height)
-        .ToList();
+        //panels still waiting for a frame
+        //each round the panel with the fewest options left goes next
+        var remaining = new List<Panel>(panels);
 
         var resultsById = new Dictionary<string, PanelMatch>();
-        foreach (var panel in order)
+        while (remaining.Count > 0)
         {
+            var index = MostConstrained(remaining, items, stock, settings);
+            var panel = remaining[index];
+            remaining.RemoveAt(index);
+
             resultsById[panel.Id] = FindBestFrame(panel, items, stock, settings);
         }
 
@@ -54,12 +57,36 @@ public static class PanelMatcher
         var count = 0;
         foreach (var item in items)
         {
-            if (stock.ContainsKey(item.Id) && CheckFit(item, panel, settings) is not null)
+            if (stock.GetValueOrDefault(item.Id) > 0 && CheckFit(item, panel, settings) is not null)
             {
                 count++;
             }
         }
         return count;
+    }
+
+    //index of the panel with the fewest frames left that fit it
+    private static int MostConstrained(List<Panel> remaining, List<InventoryItem> items, Dictionary<string, int> stock, MatchSettings settings)
+    {
+        var bestIndex = 0;
+        var bestCount = int.MaxValue;
+
+        for (var i = 0; i < remaining.Count; i++)
+        {
+            var panel = remaining[i];
+            var best = remaining[bestIndex];
+            var count = CountPossibleItems(panel, items, stock, settings);
+
+            var fewerOptions = count < bestCount;
+            var sameButLarger = count == bestCount && panel.Width * panel.Height > best.Width * best.Height;
+            if (fewerOptions || sameButLarger)
+            {
+                bestIndex = i;
+                bestCount = count;
+            }
+        }
+
+        return bestIndex;
     }
 
     //find a matching frame and use it

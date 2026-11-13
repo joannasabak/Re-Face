@@ -1100,7 +1100,7 @@
       "quantity": 10,
       "condition": "A",
       "yearMade": 2010,
-      "source": "Ribbon windows (fit tall when rotated)",
+      "source": "Ribbon windows",
       "available": true
     },
     {
@@ -1114,7 +1114,7 @@
       "quantity": 8,
       "condition": "B",
       "yearMade": 2003,
-      "source": "Clerestory strips (fit tall when rotated)",
+      "source": "Clerestory strips",
       "available": true
     },
     {
@@ -1128,7 +1128,7 @@
       "quantity": 6,
       "condition": "A",
       "yearMade": 2013,
-      "source": "Gallery high-level glazing (fit tall when rotated)",
+      "source": "Gallery high-level glazing",
       "available": true
     },
     {
@@ -1142,7 +1142,7 @@
       "quantity": 6,
       "condition": "C",
       "yearMade": 1955,
-      "source": "Workshop roof lights (fit tall when rotated)",
+      "source": "Workshop roof lights",
       "available": true
     },
   {
@@ -1154,9 +1154,9 @@
     "height": 2250,
     "depth": 50,
     "quantity": 25,
-    "condition": "C",
+    "condition": "A",
     "yearMade": 1955,
-    "source": "Workshop roof lights (fit tall when rotated)",
+    "source": "Workshop roof lights",
     "available": true
     }
   ]
