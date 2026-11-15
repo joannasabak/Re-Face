@@ -3,7 +3,6 @@ using ReFace.Core.Models;
 
 namespace ReFace.Tests;
 
-// Tests for choosing well, not just choosing something that fits
 public class PanelMatcherSmartChoiceTests
 {
     private static InventoryItem Frame(string id, int width, int height,
@@ -48,8 +47,6 @@ public class PanelMatcherSmartChoiceTests
     [Fact]
     public void Scarce_frames_go_to_panels_that_have_no_other_option()
     {
-        // "picky" only fits the "small" frame. "flexible" fits both frames, and "small" is its
-        // closest fit. If flexible chose first, it would take small and leave picky with nothing.
         var panels = new List<Panel> { new("flexible", 1250, 1550), new("picky", 1215, 1515) };
         var items = new List<InventoryItem> { Frame("small", 1212, 1512), Frame("other", 1216, 1500) };
 
