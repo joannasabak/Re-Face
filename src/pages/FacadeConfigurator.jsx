@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import GeometryView from "../components/GeometryView.jsx";
 import FacadePicker from "../components/FacadePicker.jsx";
@@ -8,9 +8,13 @@ import ChartsPanel from "../components/ChartsPanel.jsx";
 import { useFacadeSettings } from "../hooks/useFacadeSettings.js";
 import { useInventoryMatch } from "../hooks/useMatch.js";
 import { useCarbonFactor } from "../hooks/useCarbonFactor.js";
+import GeometrySource from "../components/GeometrySource.jsx";
+import { UPLOAD } from "../facades/facadeTypes.js";
 
 import styles from "../ui/Sidebar.module.css";
 import chartsStyles from "../ui/ChartsPanel.module.css";
+
+const DEMO_SOURCE = { mode: "demo" };
 
 export default function FacadeConfigurator({ active = true }) {
   const settings = useFacadeSettings();
@@ -19,8 +23,20 @@ export default function FacadeConfigurator({ active = true }) {
   const [chartsOpen, setChartsOpen] = useState(false);
   const [started, setStarted] = useState(false);
 
+  //source of geo - demo or upload, shared by all facade types
+  const [source, setSource] = useState(DEMO_SOURCE);
+  const usingUpload = source.mode === "upload";
+
+  //what is sent to Rhino.Compute: the slider values, the demo/upload switch, and the uploaded geometry
+  //null means "don't compute yet"
+  const computeInputs = useMemo(() => {
+    if (!usingUpload) return { ...settings.inputs, [UPLOAD.toggle]: false };
+    if (!source.geometry) return null;
+    return { ...settings.inputs, [UPLOAD.toggle]: true, [UPLOAD.name]: source.geometry };
+  }, [settings.inputs, usingUpload, source]);
+
   function compareWithInventory() {
-    carbon.retry(); 
+    carbon.retry();
     match.compare();
   }
 
@@ -28,7 +44,8 @@ export default function FacadeConfigurator({ active = true }) {
     <div>
       {started ? (
         <GeometryView
-          data={settings.inputs}
+          data={computeInputs}
+          viewKey={usingUpload ? settings.selectedId + source.fileId : settings.selectedId}
           path={settings.facade.definition}
           onUpdatePanels={match.updatePanels}
           matches={match.shownMatches}
@@ -43,7 +60,11 @@ export default function FacadeConfigurator({ active = true }) {
       )}
 
       <div className={styles.sidebar}>
-        <h2>Facade type</h2>
+        <h2>Base geometry</h2>
+        <hr />
+        <GeometrySource accepts={UPLOAD.accepts} source={source} onChange={setSource} />
+
+        <h2 className={styles.sectionTitle}>Facade type</h2>
         <hr />
         <FacadePicker facades={settings.facades} selectedId={settings.selectedId} onChange={settings.selectFacade} />
 

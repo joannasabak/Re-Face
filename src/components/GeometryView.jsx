@@ -7,17 +7,17 @@ import { createMaterials, chooseMaterial, disposeMaterials } from '../scripts/ma
 
 //active = false pauses drawing while the page is hidden; results still load in the background
 //onUpdatePanels is called with the tagged panels each time new geometry arrives
-export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePanels, matches, active = true }) {
+export default function GeometryView({ data, path, viewKey, onUpdateMetadata, onUpdatePanels, matches, active = true }) {
   const containerRef = useRef(null)
   const computeRef = useRef(null)
   const renderLoopRef = useRef(null)
   const highlightRef = useRef(null)
-  const latestProps = useRef({ data, path, onUpdateMetadata, onUpdatePanels, active })
+  const latestProps = useRef({ data, path, viewKey, onUpdateMetadata, onUpdatePanels, active })
   const previousData = useRef(data)
   const previousPath = useRef(path)
 
   useEffect(() => {
-    latestProps.current = { data, path, onUpdateMetadata, onUpdatePanels, active }
+    latestProps.current = { data, path, viewKey, onUpdateMetadata, onUpdatePanels, active }
   })
 
   //this effect loads three and compute when the component is initialized
@@ -26,9 +26,9 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
     let disposed = false
     let animationId = null
     let latestRequest = 0
-    let zoomedPath = null
+    let zoomedKey = null
 
- 
+
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setClearColor(0x000000, 0)
     renderer.setSize(window.innerWidth, window.innerHeight)
@@ -55,7 +55,7 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
     scene.environment = environment
     scene.environmentIntensity = 0.5 // the lights below do most of the lighting
     pmremGenerator.dispose()
-    
+
     const materials = createMaterials()
 
     //group that holds all the meshes of the current facade
@@ -113,9 +113,10 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
     renderLoopRef.current = { startRendering, stopRendering }
 
     async function compute() {
-      const { data, path, onUpdateMetadata, onUpdatePanels } = latestProps.current
+      const { data, path, viewKey, onUpdateMetadata, onUpdatePanels } = latestProps.current
+      if (!data) return
       const request = ++latestRequest
-      const result = await runCompute(data, path)
+      const result = await runCompute(data, path, viewKey)
       console.log(result.parts.length, "meshes:", result.parts.map((part) => part.tags))
 
       // skip this result if the page closed or a newer request was sent meanwhile
@@ -140,10 +141,11 @@ export default function GeometryView({ data, path, onUpdateMetadata, onUpdatePan
       //tell the page which panels this facade has, so it can ask the API for matches
       onUpdatePanels?.(collectPanels(result.parts))
 
-      //fit the camera the first time each definition loads, not on every slider change
-      if (zoomedPath !== path) {
+      //fit the camera when the base geometry changes
+      const zoomKey = viewKey ?? path
+      if (zoomedKey !== zoomKey) {
         zoomCameraToSelection(camera, controls, model.children)
-        zoomedPath = path
+        zoomedKey = zoomKey
       }
     }
     computeRef.current = compute
@@ -232,7 +234,7 @@ function collectPanels(parts) {
       mass = 0
     }
 
-    panels.push({ id: tags.panel_id, width: width, height: height, mass: mass  })
+    panels.push({ id: tags.panel_id, width: width, height: height, mass: mass })
   }
   return panels
 }
