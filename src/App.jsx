@@ -12,6 +12,7 @@ import { useComputeStore } from "./stores/computeStore.js";
 import styles from "./App.module.css";
 
 const CONFIGURATOR_TAB = 1;
+const INVENTORY_TAB = 2;
 
 export default function App() {
   const computeStore = useComputeStore();
@@ -21,10 +22,10 @@ export default function App() {
 
   function changeTab(index) {
     setSelectedTab(index);
-    if (index==CONFIGURATOR_TAB) setConfiguratorOpened(true);
+    if (index == CONFIGURATOR_TAB) setConfiguratorOpened(true);
   }
 
-    const configuratorActive = selectedTab === CONFIGURATOR_TAB;
+  const configuratorActive = selectedTab === CONFIGURATOR_TAB;
 
   return (
     <>
@@ -33,15 +34,20 @@ export default function App() {
         onSelectedTabChange={changeTab}
       />
       <div className={styles.content}>
-        {selectedTab === 0 && <HomePage />}
-        
+        {selectedTab === 0 && (
+          <HomePage
+            onStart={() => changeTab(CONFIGURATOR_TAB)}
+            onBrowseInventory={() => changeTab(INVENTORY_TAB)}
+          />
+        )}
+
         {configuratorOpened && (
           <div hidden={!configuratorActive}>
             <FacadeConfigurator active={configuratorActive} />
           </div>
         )}
 
-        {selectedTab === 2 && <Inventory />}
+        {selectedTab === INVENTORY_TAB && <Inventory />}
       </div>
       {computeStore.computing && <Loading className={styles.loaderOverlay} />}
     </>
