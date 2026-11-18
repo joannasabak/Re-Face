@@ -37,7 +37,7 @@ export function useInventoryMatch() {
     setMatching(true);
     setError(null);
 
-    console.log(`Sending ${panels.length} panels to the API for matching (sizes in mm):`);
+    console.log(`Sending ${panels.length} panels to the API for matching:`);
     console.table(panels);
 
     try {

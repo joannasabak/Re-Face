@@ -2,6 +2,7 @@ import rhino3dm from "https://cdn.jsdelivr.net/npm/rhino3dm@8.32.0/rhino3dm.modu
 import RhinoCompute from "compute-rhino3d"
 import { BufferGeometryLoader } from "three";
 import { store } from "../stores/computeStore.js";
+import { readGeometry } from "./rhinoUpload.js";
 
 //local RhinoCompute endpoint  
 RhinoCompute.url = "http://localhost:6500/"
@@ -25,11 +26,11 @@ const savedResults = new Map()
 const geometryLoader = new BufferGeometryLoader();
 
 
-async function runCompute(data, path) {
+async function runCompute(data, path, geometryKey) {
   pendingRequests++;
   store.computing = true;
   try {
-    const key = path + " " + JSON.stringify(data);
+    const key = cacheKey(data, path, geometryKey);
 
     if (savedResults.has(key)) {
       res = savedResults.get(key);
@@ -45,11 +46,21 @@ async function runCompute(data, path) {
     const result = toThree(res);
     console.log(`Conversion to three.js: ${((performance.now() - conversionStart) / 1000).toFixed(3)} seconds`);
     return result;
-    
+
   } finally {
     pendingRequests--;
     store.computing = pendingRequests > 0;
   }
+}
+
+//the name a result is saved under: the definition plus its input values
+//uploaded geometry is a list of very long texts, so its short geometryKey stands in for it
+function cacheKey(data, path, geometryKey) {
+  const short = {};
+  for (const [name, value] of Object.entries(data)) {
+    short[name] = Array.isArray(value) && geometryKey ? geometryKey : value;
+  }
+  return path + " " + JSON.stringify(short);
 }
 
 //saves up to 25 results in the browser memory
@@ -57,7 +68,7 @@ function saveResult(key, result) {
   if (result.errors?.length) {
     return;
   }
-  
+
   savedResults.set(key, result);
 
   if (savedResults.size > MAX_SAVED_RESULTS) {
@@ -186,4 +197,10 @@ function readTags(rhinoObject) {
   return tags;
 }
 
-export { loadRhino, runCompute };
+async function readGeometryFromFile(file, accepts) {
+  await loadRhino();
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  return readGeometry(rhino, bytes, accepts);
+}
+
+export { loadRhino, runCompute, readGeometryFromFile };

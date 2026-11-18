@@ -28,7 +28,7 @@ export default function ChartsPanel({ results, panels, carbonFactor, onClose }) 
         }
     }
 
-    const carbonSaved = reusedMass * carbonFactor.carbonPerKg;
+    const carbonSaved = carbonFactor ? reusedMass * carbonFactor.carbonPerKg : null;
 
     const framesUsed = [];
     let totalFrames = 0;
@@ -50,7 +50,11 @@ export default function ChartsPanel({ results, panels, carbonFactor, onClose }) 
             <hr />
 
             <div className={styles.carbon}>
-                <p className={styles.carbonNumber}>{Math.round(carbonSaved)} kg CO₂e saved</p>
+                {carbonSaved === null ? (
+                    <p>Carbon savings unavailable (couldn't load the carbon factor).</p>
+                ) : (
+                    <p className={styles.carbonNumber}>{Math.round(carbonSaved)} kg CO₂e saved</p>
+                )}
             </div>
 
             <h3>Reused panels:</h3>

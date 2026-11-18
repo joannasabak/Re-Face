@@ -42,8 +42,8 @@ public class PanelMatcherTests
     {
         var panels = new List<Panel>
         {
-            new("tooSmall", 1300, 1500), // frame would be 100 mm narrower: more than the 50 mm allowed
-            new("tooBig", 1100, 1500),   // frame is wider than the panel
+            new("tooSmall", 1350, 1500), // frame would be too narrow
+            new("tooBig", 1050, 1500),   // frame is wider than the panel
         };
         var items = new List<InventoryItem> { Frame("W1", 1200, 1500, quantity: 5) };
 

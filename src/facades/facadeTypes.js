@@ -4,13 +4,15 @@
 // Each input's `name` must match the ParamName of the Hops
 // component in Grasshopper exactly (spaces, underscores and capitals included).
 
-import foldingDefinition from "../assets/grasshopper/Folding_facade.gh";
-import steppingDefinition from "../assets/grasshopper/Stepping facade from curve.gh";
-import boxyDefinition from "../assets/grasshopper/Stepping facade on volume.gh";
+import foldingDefinition from "../assets/grasshopper/Folding_facade_User.gh";
+import steppingDefinition from "../assets/grasshopper/Stepping facade from curve_User.gh";
+import boxyDefinition from "../assets/grasshopper/Stepping facade on volume_User.gh";
 
 import foldingThumbnail from "../assets/thumbnails/Zigzag.png";
 import steppingThumbnail from "../assets/thumbnails/Stepping.png";
 import boxyThumbnail from "../assets/thumbnails/Boxy.png";
+
+export const UPLOAD = { toggle: "Use_upload", name: "User Input", accepts: ["surface"] };
 
 export const FACADE_TYPES = [
   {
